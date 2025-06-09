@@ -1,0 +1,87 @@
+<div class="card">
+  <div class="card-body">
+    <form action="<%= task.persisted? ? task_path(task) : tasks_path %>" method="post" data-turbo="false">
+      <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+      <% if task.persisted? %>
+        <%= hidden_field_tag :_method, 'patch' %>
+      <% end %>
+      <% if task.errors.any? %>
+        <div class="alert alert-danger mb-4" style="background: #fef2f2; color: #dc2626; padding: 1rem; border-radius: 6px; border: 1px solid #f87171;">
+          <h4 style="margin: 0 0 0.5rem 0; font-weight: 600;">
+            <%= pluralize(task.errors.count, "error") %> impidieron guardar esta tarea:
+          </h4>
+          <ul style="margin: 0; padding-left: 1.5rem;">
+            <% task.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-group">
+        <%= label_tag :title, "Título", class: "form-label" %>
+        <%= text_field_tag :title, task.title, 
+            maxlength: 50, 
+            placeholder: "Nombre de la tarea (máximo 50 caracteres)", 
+            class: "form-input" %>
+      </div>
+
+      <div class="form-group">
+        <%= label_tag :description, "Descripción", class: "form-label" %>
+        <%= text_area_tag :description, task.description, 
+            maxlength: 200, 
+            placeholder: "Descripción detallada de la tarea (máximo 200 caracteres)", 
+            class: "form-textarea" %>
+      </div>
+
+      <div class="form-group">
+        <%= label_tag :status, "Estado", class: "form-label" %>
+        <%= select_tag :status, options_for_select([
+          ['Pendiente', 'pending'],
+          ['Completada', 'completed']
+        ], task.status), class: "form-select" %>
+      </div>
+
+      <div class="form-group">
+        <%= label_tag :priority, "Prioridad", class: "form-label" %>
+        <%= select_tag :priority, options_for_select([
+          ['Alta', 'high'],
+          ['Media', 'medium'], 
+          ['Baja', 'low']
+        ], task.priority), class: "form-select" %>
+      </div>
+
+      <div class="form-group">
+        <%= label_tag :category, "Categoría", class: "form-label" %>
+        <%= text_field_tag :category, task.category, 
+            list: "categories-list", 
+            placeholder: "Escribe una categoría o selecciona una existente", 
+            class: "form-input" %>
+        <datalist id="categories-list">
+          <% ['Trabajo', 'Personal', 'Estudios', 'Hogar', 'Salud', 'Finanzas', 'Ejercicio', 'Ocio'].each do |suggested_category| %>
+            <option value="<%= suggested_category.downcase %>"><%= suggested_category %></option>
+          <% end %>
+          <% @user_categories&.each do |user_category| %>
+            <option value="<%= user_category %>"><%= user_category.capitalize %></option>
+          <% end %>
+        </datalist>
+        <small class="text-gray-500 text-sm">
+          Puedes escribir una nueva categoría o seleccionar una de las existentes
+        </small>
+      </div>
+
+      <div class="form-group">
+        <%= label_tag :due_date, "Fecha límite (opcional)", class: "form-label" %>
+        <%= datetime_local_field_tag :due_date, task.due_date, class: "form-input" %>
+        <small class="text-gray-500 text-sm">
+          Recibirás notificaciones cuando la tarea esté próxima a vencer
+        </small>
+      </div>
+
+      <div class="d-flex gap-3 mt-6">
+        <%= submit_tag task.persisted? ? "Actualizar Tarea" : "Crear Tarea", class: "btn btn-primary" %>
+        <%= link_to "Cancelar", tasks_path, class: "btn btn-secondary" %>
+      </div>
+    </form>
+  </div>
+</div> 

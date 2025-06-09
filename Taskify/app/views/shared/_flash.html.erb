@@ -1,0 +1,11 @@
+<% if notice %>
+  <div class="flash-notice" data-controller="flash" data-flash-dismiss-after-value="3000">
+    <%= notice %>
+  </div>
+<% end %>
+
+<% if alert %>
+  <div class="flash-alert" data-controller="flash" data-flash-dismiss-after-value="3000">
+    <%= alert %>
+  </div>
+<% end %> 

@@ -1,0 +1,8 @@
+<%= turbo_stream.update "tasks_list" do %>
+  <%= render 'tasks_content', 
+      tasks: @tasks, 
+      user_categories: @user_categories,
+      due_soon_tasks: @due_soon_tasks,
+      overdue_tasks: @overdue_tasks,
+      due_today_tasks: @due_today_tasks %>
+<% end %> 

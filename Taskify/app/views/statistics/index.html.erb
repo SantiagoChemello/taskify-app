@@ -1,0 +1,130 @@
+<div class="page-header">
+  <h1 class="page-title">
+    <span class="icon icon-stats"></span>
+    Estadísticas
+  </h1>
+  <div class="mt-4">
+    <%= link_to tasks_path, class: "btn btn-secondary" do %>
+      <span class="icon icon-arrow-left"></span>
+      Back to Tasks
+    <% end %>
+  </div>
+</div>
+
+<div class="task-stats-container">
+  <!-- Main Stats Grid -->
+  <div class="main-stats-grid">
+    <!-- Tasks Completed Card -->
+    <div class="stat-card completed-card" data-controller="animate" data-animate-on-enter="true">
+      <div class="stat-header">
+        <h3>Tareas Completadas</h3>
+        <span class="stat-period">Últimos 30 días</span>
+      </div>
+      <div class="stat-number" data-animate-target="number" data-value="<%= @completed_tasks %>">
+        0
+      </div>
+      <div class="chart-container">
+        <canvas id="completedChart"
+                data-controller="chart"
+                data-chart-type-value="bar"
+                data-chart-data-value="<%= @completed_chart_data.to_json %>"
+                data-chart-options-value="<%= {
+                  scales: {
+                    y: { beginAtZero: true },
+                    x: { grid: { display: false } }
+                  },
+                  plugins: {
+                    legend: { display: false }
+                  }
+                }.to_json %>"></canvas>
+      </div>
+    </div>
+
+    <!-- Tasks Overdue Card -->
+    <div class="stat-card overdue-card" data-controller="animate" data-animate-on-enter="true">
+      <div class="stat-header">
+        <h3>Tareas Vencidas</h3>
+        <span class="stat-period">Últimos 30 días</span>
+      </div>
+      <div class="stat-number" data-animate-target="number" data-value="<%= @overdue_tasks %>">
+        0
+      </div>
+      <div class="chart-container">
+        <canvas id="overdueChart"
+                data-controller="chart"
+                data-chart-type-value="line"
+                data-chart-data-value="<%= @overdue_chart_data.to_json %>"
+                data-chart-options-value="<%= {
+                  scales: {
+                    y: { beginAtZero: true },
+                    x: { grid: { display: false } }
+                  },
+                  elements: {
+                    line: {
+                      tension: 0.4,
+                      borderWidth: 2,
+                      fill: true
+                    },
+                    point: {
+                      radius: 4,
+                      hitRadius: 10,
+                      hoverRadius: 6
+                    }
+                  }
+                }.to_json %>"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Stats -->
+  <% if @total_tasks > 0 %>
+    <div class="summary-stats-grid">
+      <!-- Total Tasks -->
+      <div class="summary-card" data-controller="animate" data-animate-on-enter="true">
+        <div class="summary-icon">
+          <span class="icon icon-tasks"></span>
+        </div>
+        <div class="summary-content">
+          <h4>Total de Tareas</h4>
+          <div class="summary-number" data-animate-target="number" data-value="<%= @total_tasks %>">0</div>
+        </div>
+      </div>
+
+      <!-- Completion Rate -->
+      <div class="summary-card" data-controller="animate" data-animate-on-enter="true">
+        <div class="summary-icon">
+          <span class="icon icon-chart"></span>
+        </div>
+        <div class="summary-content">
+          <h4>Tasa de Completado</h4>
+          <div class="summary-number">
+            <span data-animate-target="number" data-value="<%= @completion_percentage %>">0</span>%
+          </div>
+          <div class="progress-bar">
+            <div class="progress" style="width: <%= @completion_percentage %>%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pending Tasks -->
+      <div class="summary-card" data-controller="animate" data-animate-on-enter="true">
+        <div class="summary-icon">
+          <span class="icon icon-clock"></span>
+        </div>
+        <div class="summary-content">
+          <h4>Tareas Pendientes</h4>
+          <div class="summary-number" data-animate-target="number" data-value="<%= @pending_tasks %>">0</div>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <div class="empty-icon">
+        <span class="icon icon-stats"></span>
+      </div>
+      <h3>No hay estadísticas aún</h3>
+      <p>Crea algunas tareas para ver tus estadísticas de productividad.</p>
+      <%= link_to "Crear Primera Tarea", new_task_path, class: "btn btn-primary", data: { turbo_frame: "_top" } %>
+    </div>
+  <% end %>
+</div> 

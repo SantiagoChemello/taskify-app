@@ -1,0 +1,115 @@
+<div class="page-header">
+  <h1 class="page-title">
+    <%= @task.title %>
+  </h1>
+  <p class="page-subtitle">Detalles de la tarea</p>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Task Details -->
+      <div>
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold mb-2">Descripción</h3>
+          <p class="text-gray-700">
+            <%= @task.description.present? ? @task.description : "Sin descripción" %>
+          </p>
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold mb-2">Estado</h3>
+          <span class="status-badge status-<%= @task.status %>">
+            <span class="icon icon-<%= @task.status == 'completed' ? 'check' : 'clock' %>"></span>
+            <%= @task.status == 'completed' ? 'Completada' : 'Pendiente' %>
+          </span>
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold mb-2">Prioridad</h3>
+          <span class="priority-badge priority-<%= @task.priority %>">
+            <span class="icon icon-priority-<%= @task.priority %>"></span>
+            <%= @task.priority_label_es %>
+          </span>
+        </div>
+      </div>
+
+      <!-- Additional Info -->
+      <div>
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold mb-2">Categoría</h3>
+          <% if @task.category.present? %>
+            <span class="category-badge" style="background-color: <%= @task.category_color %>;">
+              <%= @task.category.capitalize %>
+            </span>
+          <% else %>
+            <span class="category-badge no-category">Sin categoría</span>
+          <% end %>
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold mb-2">Fecha límite</h3>
+          <% if @task.due_date %>
+            <div class="task-date <%= 'overdue' if @task.overdue? %>">
+              <span class="date-main"><%= @task.due_date.strftime('%d/%m/%Y %H:%M') %></span>
+              <% if @task.due_status_es %>
+                <div class="text-sm mt-1"><%= @task.due_status_es %></div>
+              <% end %>
+            </div>
+          <% else %>
+            <span class="text-gray-500">Sin fecha límite</span>
+          <% end %>
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold mb-2">Creada</h3>
+          <div class="text-gray-700">
+            <%= @task.created_at.strftime('%d/%m/%Y %H:%M') %>
+            <div class="text-sm text-gray-500">
+              <%= @task.created_at_relative_es %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="mt-8 flex gap-3">
+      <% if @task.status == 'pending' %>
+        <%= button_to complete_task_path(@task),
+            method: :patch,
+            class: "btn btn-success",
+            data: { 
+              confirm: "¿Marcar como completada?",
+              turbo_method: :patch,
+              turbo_frame: "_top"
+            } do %>
+          <span class="icon icon-check"></span>
+          Completar
+        <% end %>
+      <% end %>
+
+      <%= link_to edit_task_path(@task), class: "btn btn-secondary", data: { turbo_frame: "_top" } do %>
+        <span class="icon icon-edit"></span>
+        Editar
+      <% end %>
+
+      <%= button_to task_path(@task), 
+          method: :delete,
+          class: "btn btn-danger",
+          data: { 
+            confirm: "¿Estás seguro de eliminar esta tarea?",
+            turbo_method: :delete,
+            turbo_frame: "_top"
+          } do %>
+        <span class="icon icon-delete"></span>
+        Eliminar
+      <% end %>
+
+      <%= link_to tasks_path, class: "btn btn-secondary", data: { turbo_frame: "_top" } do %>
+        <span class="icon icon-tasks"></span>
+        Volver a la lista
+      <% end %>
+    </div>
+  </div>
+</div> 

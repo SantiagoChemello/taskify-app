@@ -1,0 +1,273 @@
+<div class="page-header">
+  <h1 class="page-title">Configuración</h1>
+</div>
+
+<div class="settings-container" data-controller="settings">
+  <div class="settings-nav">
+    <div class="settings-nav-item active" data-section="profile" data-settings-target="navItem" data-action="click->settings#switchSection">
+      <span class="icon icon-user"></span>
+      <span>Perfil</span>
+    </div>
+    <div class="settings-nav-item" data-section="notifications" data-settings-target="navItem" data-action="click->settings#switchSection">
+      <span class="icon icon-bell"></span>
+      <span>Notificaciones</span>
+    </div>
+    <div class="settings-nav-item" data-section="preferences" data-settings-target="navItem" data-action="click->settings#switchSection">
+      <span class="icon icon-settings"></span>
+      <span>Preferencias</span>
+    </div>
+  </div>
+
+  <div class="settings-content" data-settings-target="content">
+    <!-- Profile Section -->
+    <div class="settings-section active" id="profile-section" data-settings-target="section">
+      <div class="section-header">
+        <h2>Información del Perfil</h2>
+      </div>
+
+      <div class="settings-cards">
+        <!-- Profile Info Card -->
+        <div class="settings-card">
+          <div class="card-header">
+            <h3>Información Personal</h3>
+          </div>
+          <div class="card-content">
+            <form action="<%= update_profile_settings_path %>" method="post" data-turbo="false">
+              <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+              <%= hidden_field_tag :_method, 'patch' %>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="user_first_name" class="form-label">Nombre</label>
+                  <div class="input-wrapper">
+                    <span class="input-icon icon icon-user"></span>
+                    <input type="text" id="user_first_name" name="user[first_name]" value="<%= @user.first_name if @user.respond_to?(:first_name) %>" class="form-input" placeholder="Tu nombre">
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="user_last_name" class="form-label">Apellido</label>
+                  <div class="input-wrapper">
+                    <span class="input-icon icon icon-user"></span>
+                    <input type="text" id="user_last_name" name="user[last_name]" value="<%= @user.last_name if @user.respond_to?(:last_name) %>" class="form-input" placeholder="Tu apellido">
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="user_email" class="form-label">Correo Electrónico</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">@</span>
+                  <input type="email" id="user_email" name="user[email]" value="<%= @user.email %>" class="form-input" required placeholder="tu@email.com">
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  <span class="icon icon-check"></span>
+                  Actualizar Información
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Password Change Card -->
+        <div class="settings-card">
+          <div class="card-header">
+            <h3>Cambiar Contraseña</h3>
+          </div>
+          <div class="card-content">
+            <form action="<%= update_profile_settings_path %>" method="post" data-turbo="false">
+              <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+              <%= hidden_field_tag :_method, 'patch' %>
+              
+              <div class="form-group">
+                <label for="user_current_password" class="form-label">Contraseña Actual</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">●</span>
+                  <input type="password" id="user_current_password" name="user[current_password]" class="form-input" required placeholder="Tu contraseña actual">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="user_password" class="form-label">Nueva Contraseña</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">◆</span>
+                  <input type="password" id="user_password" name="user[password]" class="form-input" minlength="6" required placeholder="Mínimo 6 caracteres">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="user_password_confirmation" class="form-label">Confirmar Nueva Contraseña</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">◆</span>
+                  <input type="password" id="user_password_confirmation" name="user[password_confirmation]" class="form-input" minlength="6" required placeholder="Repite la nueva contraseña">
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  <span class="icon icon-check"></span>
+                  Cambiar Contraseña
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications Section -->
+    <div class="settings-section" id="notifications-section" data-settings-target="section">
+      <div class="section-header">
+        <h2>Configuración de Notificaciones</h2>
+      </div>
+
+      <div class="settings-cards">
+        <div class="settings-card">
+          <div class="card-header">
+            <h3>Notificaciones de Tareas</h3>
+          </div>
+          <div class="card-content">
+            <div class="notification-setting">
+              <div class="setting-info">
+                <h4>Tareas Vencidas</h4>
+                <p>Recibir notificaciones cuando las tareas estén vencidas</p>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="notification-setting">
+              <div class="setting-info">
+                <h4>Recordatorios Diarios</h4>
+                <p>Resumen diario de tareas pendientes</p>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="notification-setting">
+              <div class="setting-info">
+                <h4>Tareas que Vencen Pronto</h4>
+                <p>Alertas para tareas que vencen en los próximos 3 días</p>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preferences Section -->
+    <div class="settings-section" id="preferences-section" data-settings-target="section">
+      <div class="section-header">
+        <h2>Preferencias de la Aplicación</h2>
+      </div>
+
+      <div class="settings-cards">
+        <div class="settings-card">
+          <div class="card-header">
+            <h3>Apariencia</h3>
+          </div>
+          <div class="card-content">
+            <div class="preference-setting">
+              <div class="setting-info">
+                <h4>Tema</h4>
+                <p>Elige entre tema claro, oscuro o automático</p>
+              </div>
+              <div class="setting-control">
+                <select class="form-control" id="theme-selector">
+                  <option value="auto">Automático</option>
+                  <option value="light">Claro</option>
+                  <option value="dark">Oscuro</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="preference-setting">
+              <div class="setting-info">
+                <h4>Animaciones</h4>
+                <p>Habilitar o deshabilitar animaciones en la interfaz</p>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" checked id="animations-toggle">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="card-header">
+            <h3>Comportamiento</h3>
+          </div>
+          <div class="card-content">
+            <div class="preference-setting">
+              <div class="setting-info">
+                <h4>Tareas por Página</h4>
+                <p>Número de tareas a mostrar por página</p>
+              </div>
+              <div class="setting-control">
+                <select class="form-control" id="tasks-per-page-selector">
+                  <option value="10" selected>10 tareas</option>
+                  <option value="25">25 tareas</option>
+                  <option value="50">50 tareas</option>
+                  <option value="100">100 tareas</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="preference-setting">
+              <div class="setting-info">
+                <h4>Confirmación de Eliminación</h4>
+                <p>Solicitar confirmación antes de eliminar tareas</p>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" checked id="confirmation-toggle">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Account Actions -->
+<div class="account-actions">
+  <div class="danger-zone">
+    <h3>Zona de Peligro</h3>
+    <p>Estas acciones son permanentes y no se pueden deshacer.</p>
+    
+    <div class="danger-actions">
+      <%= link_to "Cerrar Sesión", destroy_user_session_path, 
+                  method: :delete, 
+                  class: "btn btn-secondary",
+                  data: { confirm: "¿Estás seguro de que quieres cerrar sesión?" } %>
+      
+      <button class="btn btn-danger" onclick="alert('Funcionalidad no implementada aún')">
+        Eliminar Cuenta
+      </button>
+    </div>
+  </div>
+</div> 
