@@ -1,0 +1,34 @@
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background circle with app's primary color -->
+  <circle cx="50" cy="50" r="48" fill="#153147" stroke="#ADB8BB" stroke-width="2"/>
+  
+  <!-- Clipboard/task list icon -->
+  <g transform="translate(50, 50)">
+    <!-- Clipboard background -->
+    <rect x="-18" y="-20" width="36" height="40" rx="4" fill="#F9F8F7" stroke="#EDEAE4" stroke-width="1"/>
+    
+    <!-- Clipboard clip -->
+    <rect x="-8" y="-22" width="16" height="6" rx="2" fill="#ADB8BB"/>
+    
+    <!-- Checkmark lines -->
+    <!-- First completed task -->
+    <g stroke="#69800C" stroke-width="2" fill="none">
+      <circle cx="-10" cy="-8" r="3" fill="#69800C"/>
+      <path d="M-12 -8 l2 2 l4 -4" stroke="#F9F8F7" stroke-width="1.5"/>
+    </g>
+    
+    <!-- Second completed task -->
+    <g stroke="#69800C" stroke-width="2" fill="none">
+      <circle cx="-10" cy="0" r="3" fill="#69800C"/>
+      <path d="M-12 0 l2 2 l4 -4" stroke="#F9F8F7" stroke-width="1.5"/>
+    </g>
+    
+    <!-- Third pending task -->
+    <circle cx="-10" cy="8" r="3" fill="none" stroke="#ADB8BB" stroke-width="2"/>
+    
+    <!-- Task text lines -->
+    <rect x="-2" y="-10" width="12" height="1.5" fill="#153147"/>
+    <rect x="-2" y="-2" width="8" height="1.5" fill="#153147"/>
+    <rect x="-2" y="6" width="10" height="1.5" fill="#ADB8BB"/>
+  </g>
+</svg>

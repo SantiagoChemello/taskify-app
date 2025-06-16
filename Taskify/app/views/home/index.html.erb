@@ -1,0 +1,241 @@
+<div class="landing-page">
+  <!-- Hero Title Section -->
+  <section class="hero-title-section">
+    <div class="hero-title-container">
+      <!-- Floating Task Icons -->
+      <div class="floating-task-icons">
+        <div class="floating-icon icon-1 animate-float-orbit">
+          <span class="icon icon-check"></span>
+        </div>
+        <div class="floating-icon icon-2 animate-float-orbit" style="animation-delay: 0.5s;">
+          <span class="icon icon-clock"></span>
+        </div>
+        <div class="floating-icon icon-3 animate-float-orbit" style="animation-delay: 1s;">
+          <span class="icon icon-calendar"></span>
+        </div>
+        <div class="floating-icon icon-4 animate-float-orbit" style="animation-delay: 1.5s;">
+          <span class="icon icon-stats"></span>
+        </div>
+        <div class="floating-icon icon-5 animate-float-orbit" style="animation-delay: 2s;">
+          <span class="icon icon-plus"></span>
+        </div>
+        <div class="floating-icon icon-6 animate-float-orbit" style="animation-delay: 2.5s;">
+          <span class="icon icon-edit"></span>
+        </div>
+        <div class="floating-icon icon-7 animate-float-orbit" style="animation-delay: 3s;">
+          <span class="icon icon-tasks"></span>
+        </div>
+        <div class="floating-icon icon-8 animate-float-orbit" style="animation-delay: 3.5s;">
+          <span class="icon icon-warning"></span>
+        </div>
+        <div class="floating-icon icon-9 animate-float-orbit" style="animation-delay: 4s;">
+          <span class="icon icon-moon"></span>
+        </div>
+        <div class="floating-icon icon-10 animate-float-orbit" style="animation-delay: 4.5s;">
+          <span class="icon icon-sun"></span>
+        </div>
+      </div>
+      
+      <h1 class="main-hero-title animate-fade-up">
+        Bienvenido a Taskify
+      </h1>
+      <p class="main-hero-subtitle animate-fade-up" style="animation-delay: 0.1s;">
+        La herramienta perfecta para organizar tus tareas y alcanzar tus objetivos.
+        Simple, elegante y eficiente.
+      </p>
+      <div class="main-hero-actions animate-fade-up" style="animation-delay: 0.3s;">
+        <%= link_to new_user_registration_path, class: "btn btn-primary btn-large animate-bounce-in" do %>
+          <span class="icon icon-plus"></span>
+          Comenzar Gratis
+        <% end %>
+        <%= link_to new_user_session_path, class: "btn btn-secondary btn-large animate-bounce-in" do %>
+          <span class="icon icon-arrow-right"></span>
+          Iniciar Sesión
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hero Image Section -->
+  <section class="hero-image-section">
+    <div class="hero-image-container">
+      <div class="hero-image">
+        <div class="floating-elements">
+          <div class="task-card card-1 animate-float">
+            <div class="task-header">
+              <div class="task-status completed"></div>
+              <div class="task-title">Diseño UI/UX</div>
+            </div>
+            <div class="task-progress">
+              <div class="progress-bar-mini">
+                <div class="progress-fill-mini" style="width: 100%"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="task-card card-2 animate-float" style="animation-delay: 0.5s;">
+            <div class="task-header">
+              <div class="task-status pending"></div>
+              <div class="task-title">Reunión Cliente</div>
+            </div>
+            <div class="task-time">
+              <span class="icon icon-calendar"></span>
+              Hoy 3:00 PM
+            </div>
+          </div>
+          
+          <div class="task-card card-3 animate-float" style="animation-delay: 1s;">
+            <div class="task-header">
+              <div class="task-status in-progress"></div>
+              <div class="task-title">Desarrollo App</div>
+            </div>
+            <div class="task-progress">
+              <div class="progress-bar-mini">
+                <div class="progress-fill-mini" style="width: 65%"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="productivity-chart animate-pulse">
+            <div class="chart-header">
+              <span class="icon icon-stats"></span>
+              Productividad
+            </div>
+            <div class="chart-bars">
+              <div class="bar" style="height: 60%"></div>
+              <div class="bar" style="height: 80%"></div>
+              <div class="bar" style="height: 45%"></div>
+              <div class="bar" style="height: 90%"></div>
+              <div class="bar" style="height: 75%"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Central Device Mockup -->
+        <div class="device-mockup">
+          <div class="device-screen">
+            <div class="screen-header">
+              <div class="screen-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="screen-title">Taskify</div>
+            </div>
+            <div class="screen-content">
+              <div class="demo-task-list">
+                <div class="demo-task-item completed">
+                  <span class="demo-check">✓</span>
+                  <span class="demo-text">Revisar propuesta</span>
+                </div>
+                <div class="demo-task-item">
+                  <span class="demo-check">○</span>
+                  <span class="demo-text">Llamar proveedor</span>
+                </div>
+                <div class="demo-task-item">
+                  <span class="demo-check">○</span>
+                  <span class="demo-text">Actualizar documentos</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- How it Works Section -->
+  <section class="how-it-works-section">
+    <div class="how-it-works-container">
+      <h2 class="section-title animate-fade-up">Organiza tu vida en 3 simples pasos</h2>
+      <div class="steps-grid">
+        <div class="step-card animate-slide-in" style="animation-delay: 0.2s;">
+          <div class="step-number">1</div>
+          <div class="step-visual">
+            <div class="step-illustration create-task">
+              <div class="floating-plus">+</div>
+              <div class="task-lines">
+                <div class="task-line"></div>
+                <div class="task-line"></div>
+                <div class="task-line short"></div>
+              </div>
+            </div>
+          </div>
+          <h3>Crea tus tareas</h3>
+          <p>Añade todas las cosas que necesitas hacer con un simple clic</p>
+        </div>
+        
+        <div class="step-card animate-slide-in" style="animation-delay: 0.4s;">
+          <div class="step-number">2</div>
+          <div class="step-visual">
+            <div class="step-illustration organize-task">
+              <div class="priority-badges">
+                <div class="priority-badge high animate-pulse"></div>
+                <div class="priority-badge medium"></div>
+                <div class="priority-badge low"></div>
+              </div>
+            </div>
+          </div>
+          <h3>Organiza por prioridad</h3>
+          <p>Establece prioridades y fechas límite para mantenerte enfocado</p>
+        </div>
+        
+        <div class="step-card animate-slide-in" style="animation-delay: 0.6s;">
+          <div class="step-number">3</div>
+          <div class="step-visual">
+            <div class="step-illustration complete-task">
+              <div class="checkmark-circle animate-check-complete">
+                <span class="checkmark">✓</span>
+              </div>
+              <div class="celebration-dots">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+              </div>
+            </div>
+          </div>
+          <h3>Completa y celebra</h3>
+          <p>Marca como completadas y ve tu progreso crecer cada día</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="features-container">
+      <h2 class="features-title">¿Por qué elegir Taskify?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <span class="icon icon-check"></span>
+          </div>
+          <h3>Gestión Simple</h3>
+          <p>Crea, organiza y completa tus tareas de manera intuitiva. Sin complicaciones, solo productividad.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <span class="icon icon-stats"></span>
+          </div>
+          <h3>Estadísticas Detalladas</h3>
+          <p>Visualiza tu progreso con gráficos y métricas que te ayudan a mejorar tu productividad.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <span class="icon icon-moon"></span>
+          </div>
+          <h3>Modo Oscuro</h3>
+          <p>Trabaja cómodamente en cualquier momento del día con nuestro elegante modo oscuro.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+</div> 

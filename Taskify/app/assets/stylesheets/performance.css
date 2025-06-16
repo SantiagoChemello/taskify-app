@@ -1,0 +1,252 @@
+/* Performance Optimizations CSS */
+
+/* Use will-change for elements that will be animated */
+.btn, .card, .task-row, .chart-container {
+  will-change: transform, opacity;
+}
+
+/* Optimize animations with transform and opacity only */
+.btn {
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* Reduce animation complexity for cards */
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+/* Optimize chart containers */
+.chart-container {
+  contain: layout style paint;
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+/* Optimize search input for better performance */
+.search-input {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.search-input.loading {
+  position: relative;
+}
+
+.search-input.loading::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border-color);
+  border-top: 2px solid var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: translateY(-50%) rotate(0deg); }
+  100% { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* Optimize task rows for better scrolling performance */
+.task-row {
+  contain: layout style;
+  transform: translateZ(0);
+  transition: background-color 0.15s ease;
+}
+
+/* Reduce repaints for priority badges */
+.priority-badge {
+  contain: layout style paint;
+}
+
+/* Optimize table rendering */
+.table {
+  contain: layout style;
+}
+
+.table tbody {
+  contain: layout style;
+}
+
+/* Optimize pagination */
+.pagination {
+  contain: layout style;
+}
+
+/* Use CSS containment for better performance */
+.main-content {
+  contain: layout style;
+}
+
+.card-body {
+  contain: layout style;
+}
+
+/* Optimize form elements */
+.form-input, .form-select, .form-textarea {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Reduce animation duration for better performance */
+.animate-fade-up {
+  animation-duration: 0.3s;
+}
+
+.animate-slide-in {
+  animation-duration: 0.3s;
+}
+
+.animate-bounce-in {
+  animation-duration: 0.4s;
+}
+
+/* Optimize theme transitions */
+* {
+  transition-duration: 0.2s;
+}
+
+/* Use transform3d for better hardware acceleration */
+.floating-elements .task-card {
+  transform: translate3d(0, 0, 0);
+}
+
+/* Optimize notification rendering */
+.notification-item {
+  contain: layout style paint;
+  transform: translateZ(0);
+}
+
+/* Reduce complexity of hover effects */
+.btn::before {
+  display: none; /* Remove complex shimmer effect */
+}
+
+/* Optimize chart performance */
+.chart-container canvas {
+  will-change: auto; /* Let browser decide */
+}
+
+/* Improve scrolling performance */
+.main-content {
+  overflow-anchor: auto;
+}
+
+/* Optimize filter selects */
+.filter-select {
+  transition: border-color 0.15s ease;
+}
+
+/* Reduce animation complexity for mobile */
+@media (max-width: 768px) {
+  .btn:hover {
+    transform: none;
+  }
+  
+  .card:hover {
+    transform: none;
+  }
+  
+  .animate-float {
+    animation: none;
+  }
+  
+  .floating-elements {
+    display: none; /* Hide complex animations on mobile */
+  }
+}
+
+/* Optimize for reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .btn:hover {
+    transform: none;
+  }
+  
+  .card:hover {
+    transform: none;
+  }
+}
+
+/* Optimize critical rendering path */
+.above-fold {
+  contain: layout style paint;
+}
+
+/* Lazy load below-fold content */
+.below-fold {
+  content-visibility: auto;
+  contain-intrinsic-size: 200px;
+}
+
+/* Optimize task list rendering */
+.tasks-list {
+  contain: layout style;
+}
+
+.task-item {
+  contain: layout style paint;
+}
+
+/* Improve paint performance */
+.status-badge, .priority-badge, .category-badge {
+  contain: layout style paint;
+  transform: translateZ(0);
+}
+
+/* Optimize statistics cards */
+.stat-card {
+  contain: layout style paint;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-1px);
+}
+
+/* Reduce layout thrashing */
+.grid {
+  contain: layout;
+}
+
+/* Optimize form validation */
+.form-input:invalid {
+  transition: border-color 0.15s ease;
+}
+
+/* Performance-optimized loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: loading-shimmer 1.5s infinite;
+}
+
+@keyframes loading-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Optimize dark mode transitions */
+[data-theme="dark"] * {
+  transition-property: background-color, color, border-color;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+} 

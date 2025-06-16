@@ -1,0 +1,81 @@
+<div class="page-header">
+  <h1 class="page-title">
+    <% if params[:query].present? %>
+      Resultados de búsqueda: "<%= params[:query] %>"
+      <% if params[:status] == 'pending' %>
+        (Pendientes)
+      <% elsif params[:status] == 'completed' %>
+        (Completadas)
+      <% end %>
+    <% elsif params[:status] == 'pending' %>
+      Mis Tareas Pendientes
+    <% elsif params[:status] == 'completed' %>
+      Mis Tareas Completadas
+    <% else %>
+      Mis Tareas
+    <% end %>
+  </h1>
+</div>
+
+<!-- Search and Filters -->
+<div class="search-filters-section" id="search-form" data-controller="search" data-search-delay-value="300" data-search-min-length-value="0">
+  <%= form_with url: tasks_path, 
+                method: :get,
+                data: { 
+                  search_target: "form",
+                  turbo_frame: "tasks_list",
+                  turbo_action: "advance"
+                }, 
+                class: "search-filters-row" do |f| %>
+    <div class="search-input-wrapper">
+      <span class="icon-search"><!-- SVG icon or font icon here --></span>
+      <%= f.text_field :query, 
+          value: params[:query], 
+          placeholder: "Buscar tareas", 
+          class: "search-input",
+          id: "search-input",
+          data: { 
+            search_target: "input", 
+            action: "input->search#input keyup->search#keyup" 
+          } %>
+    </div>
+
+    <%= f.select :due_date, 
+        options_for_select([
+          ['Fecha de vencimiento', ''],
+          ['Hoy', 'today'],
+          ['Mañana', 'tomorrow'],
+          ['Esta semana', 'week'],
+          ['Próxima semana', 'next_week']
+        ], params[:due_date]), 
+        {}, 
+        { class: "filter-select", data: { action: "change->search#change" } } %>
+
+    <%= f.select :priority, 
+        options_for_select([
+          ['Prioridad', ''],
+          ['Alta', 'high'],
+          ['Media', 'medium'],
+          ['Baja', 'low']
+        ], params[:priority]), 
+        {}, 
+        { class: "filter-select", data: { action: "change->search#change" } } %>
+
+    <%= f.select :category, 
+        options_for_select([['Categorías', '']] + Task.all_categories_for_user(current_user).map { |cat| [cat.capitalize, cat] }, params[:category]), 
+        {}, 
+        { class: "filter-select", data: { action: "change->search#change" } } %>
+  <% end %>
+</div>
+
+<!-- Results Container -->
+<%= turbo_frame_tag "tasks_list" do %>
+  <%= render 'tasks_content', 
+      tasks: @tasks, 
+      user_categories: @user_categories,
+      due_soon_tasks: @due_soon_tasks,
+      overdue_tasks: @overdue_tasks,
+      due_today_tasks: @due_today_tasks %>
+<% end %>
+
+ 

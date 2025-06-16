@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Taskify</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "performance", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
+    <link rel="icon" href="/icon.svg?v=2" type="image/svg+xml">
+    <link rel="icon" href="/icon-192.png?v=2" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="/icon-192.png?v=2" sizes="192x192">
+  </head>
+
+  <body data-controller="theme performance">
+    <!-- Fixed notification container -->
+    <div id="flash_messages" class="fixed-notifications">
+      <%= render "shared/flash" %>
+    </div>
+    
+    <div class="app-container">
+      <!-- Navigation Header -->
+      <header class="app-header">
+        <div class="header-content">
+          <div class="header-left">
+            <% unless current_page?(root_path) && !user_signed_in? %>
+              <%= link_to root_path, class: "app-logo" do %>
+                <span class="icon icon-clipboard"></span>
+                <span class="logo-text">Taskify</span>
+              <% end %>
+            <% end %>
+          </div>
+          
+          <% if user_signed_in? %>
+            <nav class="main-nav">
+              <%= link_to dashboard_path, class: "nav-link #{'nav-link--active' if current_page?(dashboard_path) || current_page?(root_path)}" do %>
+                <span class="icon icon-home"></span>
+                <span class="nav-text">Inicio</span>
+              <% end %>
+              
+              <%= link_to tasks_path, class: "nav-link #{'nav-link--active' if current_page?(tasks_path) || controller_name == 'tasks'}" do %>
+                <span class="icon icon-tasks"></span>
+                <span class="nav-text">Mis Tareas</span>
+              <% end %>
+              
+              <%= link_to statistics_path, class: "nav-link #{'nav-link--active' if current_page?(statistics_path)}" do %>
+                <span class="icon icon-stats"></span>
+                <span class="nav-text">Estadísticas</span>
+              <% end %>
+              
+              <%= link_to settings_path, class: "nav-link #{'nav-link--active' if current_page?(settings_path)}" do %>
+                <span class="icon icon-settings"></span>
+                <span class="nav-text">Configuración</span>
+              <% end %>
+            </nav>
+          <% end %>
+          
+          <div class="header-right">
+            <!-- Theme Toggle Button -->
+            <button class="theme-toggle" data-action="click->theme#toggle" title="Toggle theme">
+              <span class="icon icon-moon"></span>
+            </button>
+            <% if user_signed_in? %>
+              <div class="user-menu">
+                <span class="user-greeting">Hola, <%= current_user.email.split('@').first.capitalize %></span>
+                <%= button_to "Cerrar Sesión", destroy_user_session_path, method: :delete, 
+                    class: "logout-btn", 
+                    data: { confirm: "¿Estás seguro que deseas cerrar sesión?" } %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <% if user_signed_in? %>
+        <main class="main-content">
+          <%= yield %>
+        </main>
+      <% else %>
+        <%= yield %>
+      <% end %>
+
+      <!-- Footer -->
+      <footer class="app-footer">
+        <div class="footer-content">
+          <p>&copy; <%= Date.current.year %> Taskify. Gestiona tus tareas con eficiencia.</p>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
