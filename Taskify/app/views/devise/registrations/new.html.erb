@@ -34,6 +34,21 @@
           </div>
 
           <div class="form-group">
+            <%= f.label :role, "Tipo de Cuenta", class: "form-label" %>
+            <%= f.select :role, 
+                options_for_select([
+                  ['Ejecutor de Tareas - Recibe y completa tareas asignadas', 'task_doer'],
+                  ['Creador de Tareas - Crea tareas y las asigna a otros', 'task_maker'],
+                  ['Administrador - Control total del sistema', 'admin']
+                ], 'task_doer'), 
+                {}, 
+                { class: "form-select" } %>
+            <small class="form-hint">
+              Selecciona el tipo de cuenta según tu rol en el equipo
+            </small>
+          </div>
+
+          <div class="form-group">
             <%= f.label :password, "Contraseña", class: "form-label" %>
             <% if @minimum_password_length %>
               <span class="form-hint">Mínimo <%= @minimum_password_length %> caracteres</span>

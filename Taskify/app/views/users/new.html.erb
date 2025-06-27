@@ -1,0 +1,114 @@
+<% content_for :title, "Nuevo Usuario" %>
+
+<div class="page-header">
+  <div class="page-header-content">
+    <div class="page-title-section">
+      <h1 class="page-title">
+        <span class="icon icon-user"></span>
+        Nuevo Usuario
+      </h1>
+      <p class="page-subtitle">Crea un nuevo usuario en el sistema</p>
+    </div>
+    <div class="page-actions">
+      <%= link_to users_path, class: "btn btn-secondary" do %>
+        <span class="icon icon-arrow-left"></span>
+        Volver a Usuarios
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="main-content">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">
+        <span class="icon icon-plus"></span>
+        Información del Usuario
+      </h3>
+    </div>
+    
+    <div class="card-body">
+      <%= form_with model: @user, local: true, class: "user-form" do |f| %>
+        
+        <% if @user.errors.any? %>
+          <div class="alert alert-danger">
+            <div class="alert-header">
+              <span class="icon icon-warning"></span>
+              <h4 class="alert-title">Se encontraron errores</h4>
+            </div>
+            <div class="alert-content">
+              <ul class="alert-list">
+                <% @user.errors.full_messages.each do |message| %>
+                  <li class="alert-item"><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="form-row">
+          <div class="form-group">
+            <%= f.label :name, "Nombre completo", class: "form-label" %>
+            <%= f.text_field :name, class: "form-input", placeholder: "Ej: Juan Pérez", required: true %>
+          </div>
+          
+          <div class="form-group">
+            <%= f.label :email, "Correo electrónico", class: "form-label" %>
+            <%= f.email_field :email, class: "form-input", placeholder: "Ej: juan@empresa.com", required: true %>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <%= f.label :password, "Contraseña", class: "form-label" %>
+            <div class="password-field">
+              <%= f.password_field :password, class: "form-input", placeholder: "Mínimo 6 caracteres", required: true %>
+              <button type="button" class="password-toggle" data-controller="password-toggle">
+                <span class="icon icon-eye"></span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <%= f.label :password_confirmation, "Confirmar contraseña", class: "form-label" %>
+            <div class="password-field">
+              <%= f.password_field :password_confirmation, class: "form-input", placeholder: "Repite la contraseña", required: true %>
+              <button type="button" class="password-toggle" data-controller="password-toggle">
+                <span class="icon icon-eye"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :role, "Rol del usuario", class: "form-label" %>
+          <%= f.select :role, 
+              options_for_select([
+                ['Administrador', 'admin'],
+                ['Creador de Tareas', 'task_maker'],
+                ['Ejecutor de Tareas', 'task_doer']
+              ], @user.role), 
+              { prompt: 'Selecciona un rol' }, 
+              { class: "form-select", required: true } %>
+          <p class="form-hint">
+            <strong>Administrador:</strong> Acceso completo al sistema<br>
+            <strong>Creador de Tareas:</strong> Puede crear y gestionar tareas<br>
+            <strong>Ejecutor de Tareas:</strong> Puede completar tareas asignadas
+          </p>
+        </div>
+
+        <div class="form-actions">
+          <%= f.submit "Crear Usuario", class: "btn btn-primary" do %>
+            <span class="icon icon-plus"></span>
+            Crear Usuario
+          <% end %>
+          
+          <%= link_to users_path, class: "btn btn-secondary" do %>
+            <span class="icon icon-times"></span>
+            Cancelar
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div> 

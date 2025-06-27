@@ -51,6 +51,18 @@
         ], task.priority), class: "form-select" %>
       </div>
 
+      <% if can_assign_task?(task) %>
+        <div class="form-group">
+          <%= label_tag :assignee_id, "Asignar a", class: "form-label" %>
+          <%= select_tag :assignee_id, 
+              options_for_select([['Sin asignar', '']] + @assignable_users, task.assignee_id), 
+              class: "form-select" %>
+          <small class="text-gray-500 text-sm">
+            Selecciona un usuario para asignar esta tarea
+          </small>
+        </div>
+      <% end %>
+
       <div class="form-group">
         <%= label_tag :category, "Categoría", class: "form-label" %>
         <%= text_field_tag :category, task.category, 

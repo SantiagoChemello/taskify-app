@@ -1,0 +1,149 @@
+---
+description: This file describes Maybe's design system and how views should be styled
+globs: app/views/**,app/helpers/**,app/javascript/controllers/**
+alwaysApply: true
+---
+# Frontend Rules for Taskify
+
+Use the rules below when:
+
+* You are writing **HTML**
+* You are writing **CSS**
+* You are writing styles in a **JavaScript/Stimulus controller**
+
+---
+
+## Design System Overview
+
+Taskify uses a **custom CSS design system** with CSS variables for theming and a custom icon system. The design is defined in:
+
+```
+app/assets/stylesheets/application.css
+```
+
+---
+
+### ✅ Always start here
+
+* **Before** you write any markup or styles, reference `application.css` to understand:
+
+  * **CSS custom properties** (CSS variables) for colors and themes
+  * **Custom icon system** using CSS pseudo-elements
+  * **Animation keyframes** for transitions and interactions
+  * **Component styles** for cards, buttons, forms, etc.
+
+---
+
+### ✅ Always prefer existing CSS variables
+
+Use the CSS custom properties defined in `:root` and `.dark-mode` whenever possible.
+
+Examples:
+
+* ✅ **Good**
+
+  * `color: var(--text-primary)` (instead of hardcoded colors)
+  * `background-color: var(--bg-primary)` (instead of `background-color: white`)
+  * `border: 1px solid var(--border-color)` (instead of hardcoded border colors)
+* ❌ **Avoid**
+
+  * Hardcoded hex colors unless absolutely necessary
+  * Re-creating color schemes that already exist
+
+### Available CSS Variables
+
+**Light Mode Colors:**
+```css
+--bg-primary: #F9F8F7;
+--bg-secondary: #EDEAE4;
+--bg-tertiary: #ADB8BB;
+--text-primary: #232A2F;
+--text-secondary: #153147;
+--text-muted: #ADB8BB;
+--accent-primary: #153147;
+--success: #153147;
+```
+
+**Dark Mode:** Automatically applied via `.dark-mode` class
+
+---
+
+### ✅ Use the custom icon system
+
+* Icons are created using CSS pseudo-elements with the `.icon` class
+* **Always** use the existing icon classes like `.icon-plus`, `.icon-edit`, `.icon-delete`
+* Icons are defined in `application.css` using Unicode characters in `::before` pseudo-elements
+
+Examples:
+```html
+<!-- Good -->
+<span class="icon icon-plus"></span>
+<button class="btn"><span class="icon icon-edit"></span> Edit</button>
+
+<!-- Available icons -->
+.icon-plus, .icon-edit, .icon-delete, .icon-check, .icon-clock,
+.icon-calendar, .icon-warning, .icon-stats, .icon-sun, .icon-moon,
+.icon-clipboard, .icon-tasks, .icon-user, .icon-bell, .icon-search
+```
+
+---
+
+### ✅ Follow existing component patterns
+
+* Use existing CSS classes for common components:
+  * `.btn`, `.btn-primary`, `.btn-secondary` for buttons
+  * `.card`, `.card-header`, `.card-body` for cards
+  * `.form-group`, `.form-label`, `.form-input` for forms
+  * `.status-badge`, `.priority-badge` for badges
+  * `.notification-*` classes for notifications
+
+---
+
+### ✅ Leverage CSS animations
+
+* Use the predefined `@keyframes` animations:
+  * `fadeIn`, `slideIn`, `scaleIn` for entrance animations
+  * `pulse`, `bounce`, `float` for interactive feedback
+  * `fadeUp`, `slideInLeft` for page transitions
+
+Example:
+```css
+.new-element {
+  animation: fadeIn 0.3s ease-out;
+}
+```
+
+---
+
+### 🚫 Never create new styles arbitrarily
+
+* **Do not** add new CSS variables or major style changes without understanding the existing system
+* **Do not** create new icon fonts or icon systems - use the existing CSS pseudo-element approach
+* If you believe a new style is needed:
+
+  * **First**, check if existing classes can be combined or modified
+  * Follow the existing naming patterns and color system
+
+---
+
+### ✅ Always generate semantic HTML
+
+* Use the correct HTML elements (`button`, `nav`, `section`, etc.) rather than relying on `<div>` and `<span>` for everything
+* Make sure your markup is accessible and follows the existing patterns in the views
+* Follow the existing form patterns and card layouts
+
+---
+
+### ✅ Theme Support
+
+* All styles support both light and dark modes automatically
+* Dark mode is toggled via the `.dark-mode` class on the HTML element
+* Use CSS variables to ensure your styles work in both themes
+* Test your styles in both light and dark modes
+
+---
+
+✅ **Reminder:** Consistency with the existing design system is more important than personal style preferences.
+✅ **Tip:** When in doubt, review existing components in the views before creating new markup or styles.
+
+---

@@ -55,6 +55,13 @@
                 <span class="nav-text">Estadísticas</span>
               <% end %>
               
+              <% if current_user.admin? %>
+                <%= link_to users_path, class: "nav-link #{'nav-link--active' if controller_name == 'users'}" do %>
+                  <span class="icon icon-users"></span>
+                  <span class="nav-text">Usuarios</span>
+                <% end %>
+              <% end %>
+              
               <%= link_to settings_path, class: "nav-link #{'nav-link--active' if current_page?(settings_path)}" do %>
                 <span class="icon icon-settings"></span>
                 <span class="nav-text">Configuración</span>
@@ -69,7 +76,10 @@
             </button>
             <% if user_signed_in? %>
               <div class="user-menu">
-                <span class="user-greeting">Hola, <%= current_user.email.split('@').first.capitalize %></span>
+                <span class="user-greeting">
+                  Hola, <%= current_user.name || current_user.email.split('@').first.capitalize %>
+                  <small class="user-role">(<%= current_user.role_label %>)</small>
+                </span>
                 <%= button_to "Cerrar Sesión", destroy_user_session_path, method: :delete, 
                     class: "logout-btn", 
                     data: { confirm: "¿Estás seguro que deseas cerrar sesión?" } %>

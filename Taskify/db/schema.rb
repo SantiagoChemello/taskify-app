@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_06_07_052328) do
+ActiveRecord::Schema[7.2].define(version: 2025_06_19_203153) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -25,6 +25,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_07_052328) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.virtual "searchable_text", type: :tsvector, as: "to_tsvector('spanish'::regconfig, (((((COALESCE(title, ''::character varying))::text || ' '::text) || COALESCE(description, ''::text)) || ' '::text) || (COALESCE(category, ''::character varying))::text))", stored: true
+    t.uuid "assignee_id"
+    t.index ["assignee_id"], name: "index_tasks_on_assignee_id"
     t.index ["category"], name: "index_tasks_on_category"
     t.index ["due_date"], name: "index_tasks_on_due_date"
     t.index ["priority"], name: "index_tasks_on_priority"
@@ -51,9 +53,12 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_07_052328) do
     t.datetime "remember_created_at"
     t.string "first_name"
     t.string "last_name"
+    t.integer "role", default: 2, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["role"], name: "index_users_on_role"
   end
 
   add_foreign_key "tasks", "users"
+  add_foreign_key "tasks", "users", column: "assignee_id"
 end

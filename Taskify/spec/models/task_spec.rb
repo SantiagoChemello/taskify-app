@@ -76,6 +76,12 @@ RSpec.describe Task, type: :model do
       association = described_class.reflect_on_association(:user)
       expect(association.macro).to eq :belongs_to
     end
+
+    it 'belongs to assignee optionally' do
+      association = described_class.reflect_on_association(:assignee)
+      expect(association.macro).to eq :belongs_to
+      expect(association.options[:optional]).to be true
+    end
   end
 
   describe 'enums' do
@@ -414,6 +420,171 @@ RSpec.describe Task, type: :model do
       it 'returns status for tasks not due soon but have due dates' do
         task.update(due_date: Date.current + 1.week, status: 'pending')
         expect(task.due_status_es).to eq('Vence en 7 días')
+      end
+    end
+  end
+
+  describe 'role-based permissions' do
+    let(:admin) { create(:user, role: 'admin') }
+    let(:task_maker) { create(:user, role: 'task_maker') }
+    let(:task_doer) { create(:user, role: 'task_doer') }
+    let(:other_task_maker) { create(:user, role: 'task_maker') }
+    
+    let(:task_by_maker) { create(:task, user: task_maker) }
+    let(:task_assigned_to_doer) { create(:task, user: task_maker, assignee: task_doer) }
+    let(:unassigned_task) { create(:task, user: task_maker, assignee: nil) }
+
+    describe '#assigned?' do
+      it 'returns true when task has an assignee' do
+        expect(task_assigned_to_doer.assigned?).to be true
+      end
+
+      it 'returns false when task has no assignee' do
+        expect(unassigned_task.assigned?).to be false
+      end
+    end
+
+    describe '#assignee_name' do
+      it 'returns assignee name when assigned' do
+        expect(task_assigned_to_doer.assignee_name).to eq(task_doer.name)
+      end
+
+      it 'returns "Sin asignar" when not assigned' do
+        expect(unassigned_task.assignee_name).to eq('Sin asignar')
+      end
+    end
+
+    describe '#creator_name' do
+      it 'returns creator name' do
+        expect(task_by_maker.creator_name).to eq(task_maker.name)
+      end
+    end
+
+    describe '#can_be_viewed_by?' do
+      context 'admin user' do
+        it 'can view all tasks' do
+          expect(task_by_maker.can_be_viewed_by?(admin)).to be true
+          expect(task_assigned_to_doer.can_be_viewed_by?(admin)).to be true
+        end
+      end
+
+      context 'task_maker user' do
+        it 'can view own tasks' do
+          expect(task_by_maker.can_be_viewed_by?(task_maker)).to be true
+        end
+
+        it 'can view tasks assigned to them' do
+          task_assigned_to_maker = create(:task, user: other_task_maker, assignee: task_maker)
+          expect(task_assigned_to_maker.can_be_viewed_by?(task_maker)).to be true
+        end
+
+        it 'cannot view other users tasks' do
+          other_task = create(:task, user: other_task_maker)
+          expect(other_task.can_be_viewed_by?(task_maker)).to be false
+        end
+      end
+
+      context 'task_doer user' do
+        it 'can view tasks assigned to them' do
+          expect(task_assigned_to_doer.can_be_viewed_by?(task_doer)).to be true
+        end
+
+        it 'cannot view unassigned tasks' do
+          expect(unassigned_task.can_be_viewed_by?(task_doer)).to be false
+        end
+
+        it 'cannot view tasks assigned to others' do
+          other_doer = create(:user, role: 'task_doer')
+          task_for_other = create(:task, user: task_maker, assignee: other_doer)
+          expect(task_for_other.can_be_viewed_by?(task_doer)).to be false
+        end
+      end
+    end
+
+    describe '#can_be_edited_by?' do
+      context 'admin user' do
+        it 'can edit all tasks' do
+          expect(task_by_maker.can_be_edited_by?(admin)).to be true
+          expect(task_assigned_to_doer.can_be_edited_by?(admin)).to be true
+        end
+      end
+
+      context 'task_maker user' do
+        it 'can edit own tasks' do
+          expect(task_by_maker.can_be_edited_by?(task_maker)).to be true
+        end
+
+        it 'cannot edit other users tasks' do
+          other_task = create(:task, user: other_task_maker)
+          expect(other_task.can_be_edited_by?(task_maker)).to be false
+        end
+      end
+
+      context 'task_doer user' do
+        it 'cannot edit any tasks' do
+          expect(task_assigned_to_doer.can_be_edited_by?(task_doer)).to be false
+          expect(unassigned_task.can_be_edited_by?(task_doer)).to be false
+        end
+      end
+    end
+
+    describe 'scopes' do
+      before do
+        # Create tasks for testing visibility
+        @admin_task = create(:task, user: admin)
+        @maker_task = create(:task, user: task_maker)
+        @assigned_to_maker = create(:task, user: other_task_maker, assignee: task_maker)
+        @assigned_to_doer = create(:task, user: task_maker, assignee: task_doer)
+        @unassigned_task = create(:task, user: task_maker, assignee: nil)
+      end
+
+      describe '.visible_to_user' do
+        context 'admin user' do
+          it 'sees all tasks' do
+            visible_tasks = Task.visible_to_user(admin)
+            expect(visible_tasks).to include(@admin_task, @maker_task, @assigned_to_maker, @assigned_to_doer, @unassigned_task)
+          end
+        end
+
+        context 'task_maker user' do
+          it 'sees own tasks and tasks assigned to them' do
+            visible_tasks = Task.visible_to_user(task_maker)
+            expect(visible_tasks).to include(@maker_task, @assigned_to_maker, @assigned_to_doer, @unassigned_task)
+            expect(visible_tasks).not_to include(@admin_task)
+          end
+        end
+
+        context 'task_doer user' do
+          it 'sees only tasks assigned to them' do
+            visible_tasks = Task.visible_to_user(task_doer)
+            expect(visible_tasks).to include(@assigned_to_doer)
+            expect(visible_tasks).not_to include(@admin_task, @maker_task, @assigned_to_maker, @unassigned_task)
+          end
+        end
+      end
+
+      describe '.assigned_to' do
+        it 'returns tasks assigned to specific user' do
+          tasks = Task.assigned_to(task_doer)
+          expect(tasks).to include(@assigned_to_doer)
+          expect(tasks).not_to include(@unassigned_task, @assigned_to_maker)
+        end
+      end
+
+      describe '.created_by' do
+        it 'returns tasks created by specific user' do
+          tasks = Task.created_by(task_maker)
+          expect(tasks).to include(@maker_task, @assigned_to_doer, @unassigned_task)
+          expect(tasks).not_to include(@admin_task, @assigned_to_maker)
+        end
+      end
+
+      describe '.unassigned' do
+        it 'returns tasks without assignee' do
+          tasks = Task.unassigned
+          expect(tasks).to include(@unassigned_task)
+          expect(tasks).not_to include(@assigned_to_doer, @assigned_to_maker)
+        end
       end
     end
   end

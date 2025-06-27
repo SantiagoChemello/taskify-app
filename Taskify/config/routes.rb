@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :users, controllers: { sessions: 'sessions' }
+  devise_for :users
   
   # Dashboard route
   get 'dashboard', to: 'dashboard#index'
@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   resources :tasks, only: [:index, :new, :create, :edit, :update, :destroy, :show] do
     member do
       patch :complete
+      patch :assign
     end
     collection do
       post :sync
@@ -14,6 +15,9 @@ Rails.application.routes.draw do
   end
 
   resources :statistics, only: [:index]
+  
+  # User management (admin only)
+  resources :users
   
   # Settings routes
   resources :settings, only: [:index, :update] do

@@ -1,0 +1,235 @@
+<% content_for :title, "Información de #{@user.name}" %>
+
+<div class="page-header">
+  <div class="page-header-content">
+    <div class="page-title-section">
+      <h1 class="page-title">
+        <span class="icon icon-user"></span>
+        Información del Usuario
+      </h1>
+      <p class="page-subtitle">Detalles completos de <%= @user.name %></p>
+    </div>
+    <div class="page-actions">
+      <%= link_to users_path, class: "btn btn-secondary" do %>
+        <span class="icon icon-arrow-left"></span>
+        Volver a Usuarios
+      <% end %>
+      <%= link_to edit_user_path(@user), class: "btn btn-primary" do %>
+        <span class="icon icon-edit"></span>
+        Editar Usuario
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="main-content">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    
+    <!-- Información Personal -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <span class="icon icon-user"></span>
+          Información Personal
+        </h3>
+      </div>
+      <div class="card-body">
+        <div class="user-info-grid">
+          <div class="info-item">
+            <label class="info-label">Nombre completo</label>
+            <div class="info-value">
+              <span class="icon icon-user"></span>
+              <%= @user.name %>
+              <% if @user == current_user %>
+                <span class="badge badge-info">Tú</span>
+              <% end %>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <label class="info-label">Correo electrónico</label>
+            <div class="info-value">
+              <span class="icon icon-mail"></span>
+              <%= @user.email %>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <label class="info-label">Rol del sistema</label>
+            <div class="info-value">
+              <span class="role-badge role-<%= @user.role %>">
+                <%= @user.role_label %>
+              </span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <label class="info-label">Fecha de registro</label>
+            <div class="info-value">
+              <span class="icon icon-calendar"></span>
+              <%= @user.created_at.strftime('%d de %B de %Y') %>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <label class="info-label">Última actualización</label>
+            <div class="info-value">
+              <span class="icon icon-clock"></span>
+              <%= @user.updated_at.strftime('%d/%m/%Y a las %H:%M') %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estadísticas de Tareas -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <span class="icon icon-tasks"></span>
+          Estadísticas de Tareas
+        </h3>
+      </div>
+      <div class="card-body">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-icon created">
+              <span class="icon icon-plus"></span>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number"><%= @user.tasks.count %></div>
+              <div class="stat-label">Tareas Creadas</div>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-icon assigned">
+              <span class="icon icon-user"></span>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number"><%= @user.assigned_tasks.count %></div>
+              <div class="stat-label">Tareas Asignadas</div>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-icon completed">
+              <span class="icon icon-check"></span>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number"><%= @user.assigned_tasks.where(status: 'completed').count %></div>
+              <div class="stat-label">Tareas Completadas</div>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-icon pending">
+              <span class="icon icon-clock"></span>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number"><%= @user.assigned_tasks.where(status: 'pending').count %></div>
+              <div class="stat-label">Tareas Pendientes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tareas Recientes -->
+  <% if @user.assigned_tasks.any? %>
+    <div class="card mt-6">
+      <div class="card-header">
+        <h3 class="card-title">
+          <span class="icon icon-tasks"></span>
+          Tareas Asignadas Recientes
+        </h3>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>Estado</th>
+                <th>Prioridad</th>
+                <th>Fecha límite</th>
+                <th>Creado por</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @user.assigned_tasks.includes(:user).order(created_at: :desc).limit(5).each do |task| %>
+                <tr>
+                  <td>
+                    <%= link_to task.title, task_path(task), class: "task-title" %>
+                  </td>
+                  <td>
+                    <span class="status-badge status-<%= task.status %>">
+                      <span class="icon icon-<%= task.status == 'completed' ? 'check' : 'clock' %>"></span>
+                      <%= task.status == 'completed' ? 'Completada' : 'Pendiente' %>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="priority-badge priority-<%= task.priority %>">
+                      <span class="icon icon-priority-<%= task.priority %>"></span>
+                      <%= task.priority_label_es %>
+                    </span>
+                  </td>
+                  <td>
+                    <% if task.due_date %>
+                      <div class="task-date <%= 'overdue' if task.overdue? %>">
+                        <%= task.due_date.strftime('%d/%m/%Y') %>
+                      </div>
+                    <% else %>
+                      <span class="text-gray-500">Sin fecha</span>
+                    <% end %>
+                  </td>
+                  <td>
+                    <span class="text-sm"><%= task.user.name %></span>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        
+        <% if @user.assigned_tasks.count > 5 %>
+          <div class="mt-4 text-center">
+            <%= link_to tasks_path(assignee_id: @user.id), class: "btn btn-secondary btn-sm" do %>
+              <span class="icon icon-arrow-right"></span>
+              Ver todas las tareas asignadas (<%= @user.assigned_tasks.count %>)
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Acciones de Usuario -->
+  <% unless @user == current_user %>
+    <div class="card mt-6 danger-zone">
+      <div class="card-header">
+        <h3 class="card-title">
+          <span class="icon icon-warning"></span>
+          Zona Peligrosa
+        </h3>
+      </div>
+      <div class="card-body">
+        <div class="danger-actions">
+          <%= link_to user_path(@user), 
+              method: :delete,
+              class: "btn btn-danger",
+              data: { 
+                confirm: "¿Estás seguro de eliminar a #{@user.name}? Esta acción no se puede deshacer. Se eliminarán todas las tareas creadas por este usuario."
+              } do %>
+            <span class="icon icon-delete"></span>
+            Eliminar Usuario
+          <% end %>
+        </div>
+        <p class="danger-warning">
+          <strong>¡Cuidado!</strong> Esta acción eliminará permanentemente al usuario y todas las tareas que haya creado.
+        </p>
+      </div>
+    </div>
+  <% end %>
+</div> 

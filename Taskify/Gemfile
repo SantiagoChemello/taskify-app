@@ -37,6 +37,9 @@ gem "bootsnap", require: false
 # Use devise for authentication
 gem "devise"
 
+# Authorization
+gem "pundit"
+
 # Pagination
 gem "kaminari"
 

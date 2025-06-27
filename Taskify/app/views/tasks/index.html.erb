@@ -8,11 +8,23 @@
         (Completadas)
       <% end %>
     <% elsif params[:status] == 'pending' %>
-      Mis Tareas Pendientes
+      <% if current_user.task_doer? %>
+        Tareas Asignadas Pendientes
+      <% else %>
+        Mis Tareas Pendientes
+      <% end %>
     <% elsif params[:status] == 'completed' %>
-      Mis Tareas Completadas
+      <% if current_user.task_doer? %>
+        Tareas Asignadas Completadas
+      <% else %>
+        Mis Tareas Completadas
+      <% end %>
     <% else %>
-      Mis Tareas
+      <% if current_user.task_doer? %>
+        Tareas Asignadas
+      <% else %>
+        Mis Tareas
+      <% end %>
     <% end %>
   </h1>
 </div>

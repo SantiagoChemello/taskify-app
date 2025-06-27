@@ -1,13 +1,12 @@
 class TasksController < ApplicationController
-  before_action :authenticate_user!
-  before_action :set_task, only: [:show, :edit, :update, :destroy, :complete]
+  before_action :set_task, only: [:show, :edit, :update, :destroy, :complete, :assign]
 
   def index
-    # Build base query with optimized includes
-    base_query = current_user.tasks.includes(:user).order(created_at: :desc)
+    # Use Pundit policy scope to get tasks
+    @tasks_scope = policy_scope(Task).includes(:user, :assignee).order(created_at: :desc)
     
     # Apply filters using a single method
-    filtered_tasks = apply_filters(base_query)
+    filtered_tasks = apply_filters(@tasks_scope)
     
     # Get paginated tasks
     @tasks = filtered_tasks.page(params[:page]).per(10)
@@ -18,15 +17,15 @@ class TasksController < ApplicationController
     today_end = current_time.end_of_day
     three_days_end = 3.days.from_now.end_of_day
     
-    # Use the base user tasks for notifications (not filtered)
-    user_tasks = current_user.tasks.where(status: 'pending')
+    # Use the base user tasks for notifications (not filtered) - based on role
+    user_tasks = policy_scope(Task).where(status: 'pending')
     @overdue_tasks = user_tasks.where('due_date < ?', current_time).count
     @due_today_tasks = user_tasks.where(due_date: today_start..today_end).count
     @due_soon_tasks = user_tasks.where(due_date: today_end..three_days_end).count
     
     # Cache user categories to avoid repeated queries
     @user_categories = Rails.cache.fetch("user_categories_#{current_user.id}", expires_in: 1.hour) do
-      current_user.tasks.where.not(category: [nil, '']).distinct.pluck(:category).sort
+      policy_scope(Task).where.not(category: [nil, '']).distinct.pluck(:category).sort
     end
 
     respond_to do |format|
@@ -36,39 +35,50 @@ class TasksController < ApplicationController
   end
 
   def show
+    authorize @task
   end
 
   def new
-    @task = current_user.tasks.build
+    @task = Task.new
+    authorize @task
     @user_categories = Task.all_categories_for_user(current_user)
+    @assignable_users = assignable_users_for_select
   end
 
   def create
     @task = current_user.tasks.build(task_params)
+    authorize @task
+    
     if @task.save
       Rails.cache.delete("user_categories_#{current_user.id}")
       redirect_to tasks_path, notice: "Tarea '#{@task.title}' creada exitosamente."
     else
       @user_categories = Task.all_categories_for_user(current_user)
+      @assignable_users = assignable_users_for_select
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
+    authorize @task
     @user_categories = Task.all_categories_for_user(current_user)
+    @assignable_users = assignable_users_for_select
   end
 
   def update
+    authorize @task
     if @task.update(task_params)
       Rails.cache.delete("user_categories_#{current_user.id}")
       redirect_to tasks_path, notice: "Tarea '#{@task.title}' actualizada exitosamente."
     else
       @user_categories = Task.all_categories_for_user(current_user)
+      @assignable_users = assignable_users_for_select
       render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
+    authorize @task
     title = @task.title
     @task.destroy
     
@@ -90,6 +100,8 @@ class TasksController < ApplicationController
   end
 
   def complete
+    authorize @task, :complete?
+    
     if @task.completed?
       respond_to do |format|
         format.turbo_stream { render turbo_stream: turbo_stream.replace(@task, partial: 'tasks/task_row', locals: { task: @task }) }
@@ -117,7 +129,48 @@ class TasksController < ApplicationController
     end
   end
 
+  def assign
+    authorize @task, :assign?
+    
+    assignee_id = params[:task]&.dig(:assignee_id) || params[:assignee_id]
+    
+    if assignee_id.present?
+      assignee = User.find(assignee_id)
+      @task.update(assignee: assignee)
+      message = "Tarea '#{@task.title}' asignada a #{assignee.name}."
+    else
+      @task.update(assignee: nil)
+      message = "Tarea '#{@task.title}' desasignada."
+    end
+    
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.replace(@task, partial: 'tasks/task_row', locals: { task: @task }),
+          turbo_stream.prepend("flash_messages", 
+            "<div class='flash-notice' data-controller='flash' data-flash-dismiss-after-value='3000'>
+              #{message}
+            </div>")
+        ]
+      end
+      format.html { redirect_to tasks_path, notice: message }
+    end
+  rescue ActiveRecord::RecordNotFound
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.prepend("flash_messages", 
+          "<div class='flash-alert' data-controller='flash' data-flash-dismiss-after-value='3000'>
+            Usuario no encontrado.
+          </div>")
+      end
+      format.html { redirect_to tasks_path, alert: 'Usuario no encontrado.' }
+    end
+  end
+
   def sync
+    # Authorize user can create tasks (sync is similar to creating)
+    authorize Task.new, :create?
+    
     sync_service = TaskSyncService.new(current_user)
     result = sync_service.sync
     
@@ -133,35 +186,12 @@ class TasksController < ApplicationController
 
   private
 
-  def setup_index_data
-    # Build base query with optimized includes
-    base_query = current_user.tasks.includes(:user).order(created_at: :desc)
-    
-    # Don't apply search filters after create/update to ensure new task is visible
-    # Get all tasks (unfiltered) for create/update responses
-    @tasks = base_query.page(params[:page]).per(10)
-    
-    # Get notification data with simple queries
-    current_time = Time.current
-    today_start = current_time.beginning_of_day
-    today_end = current_time.end_of_day
-    three_days_end = 3.days.from_now.end_of_day
-    
-    # Use the base user tasks for notifications (not filtered)
-    user_tasks = current_user.tasks.where(status: 'pending')
-    @overdue_tasks = user_tasks.where('due_date < ?', current_time).count
-    @due_today_tasks = user_tasks.where(due_date: today_start..today_end).count
-    @due_soon_tasks = user_tasks.where(due_date: today_end..three_days_end).count
-    
-    # Cache user categories to avoid repeated queries
-    @user_categories = Rails.cache.fetch("user_categories_#{current_user.id}", expires_in: 1.hour) do
-      current_user.tasks.where.not(category: [nil, '']).distinct.pluck(:category).sort
-    end
-  end
-
   def apply_filters(query)
     # Apply search filter
     query = query.search(params[:query]) if params[:query].present?
+    
+    # Apply status filter
+    query = query.where(status: params[:status]) if params[:status].present?
     
     # Apply priority filter
     query = query.where(priority: params[:priority]) if params[:priority].present?
@@ -189,12 +219,25 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    params.permit(:title, :description, :status, :priority, :due_date, :category)
+    permitted_params = [:title, :description, :status, :priority, :due_date, :category]
+    
+    # Allow assignee_id if user can assign tasks (admin or task_maker)
+    if current_user.present? && (current_user.admin? || current_user.task_maker?)
+      permitted_params << :assignee_id
+    end
+    
+    params.permit(permitted_params)
   end
 
   def set_task
-    @task = current_user.tasks.find(params[:id])
+    @task = policy_scope(Task).find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    redirect_to tasks_path, alert: 'Task not found.'
+    flash[:alert] = "Tarea no encontrada."
+    redirect_to tasks_path
+  end
+
+  def assignable_users_for_select
+    return [] unless current_user.present? && (current_user.admin? || current_user.task_maker?)
+    User.where.not(id: current_user.id).map { |u| [u.name, u.id] }
   end
 end 

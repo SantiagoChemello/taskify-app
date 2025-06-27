@@ -1,0 +1,45 @@
+---
+description: Miscellaneous rules to get the AI to behave
+globs: *
+alwaysApply: true
+---
+# General Rules for AI
+
+These are rules and guidelines for AI-assisted development within the **Taskify** project.
+
+## Context Handling
+
+* Use `current_user` for the current authenticated user.
+  **Do NOT** use `Current.user`.
+* Use standard Rails patterns - there is no workspace concept in this project yet.
+* Work with the existing User and Task models as the primary entities.
+
+*(Note: This is a task management application focused on individual users and their tasks. Users have roles: admin, task_maker, and task_doer.)*
+
+---
+
+## Before Generating Code
+
+Prior to generating any code, **carefully read and understand** the following documentation:
+
+* `@project-design.mdc` – to understand the overall architecture and design of the codebase.
+* `@project-conventions.mdc` – to understand **how** to write code in a way that fits Taskify.
+* `@ui-ux-design-guidelines.mdc` – to understand **how** to implement frontend code, styles, and interactivity.
+
+---
+
+## Internationalization
+
+* **Ignore i18n methods and files.**
+* **Hardcode strings in English** for now to optimize development speed.
+
+---
+
+## Prohibited Actions
+
+When working with AI or generating instructions, **never**:
+
+* Run `rails server` in your responses.
+* Run `touch tmp/restart.txt`.
+* Run `rails credentials`.
+* Automatically run migrations.

@@ -1,0 +1,168 @@
+---
+description: This rule explains the system architecture and data flow of the Rails app
+globs: *
+alwaysApply: true
+---
+# Taskify Codebase Overview
+
+This file outlines how the codebase is structured and how data flows through the app.
+
+This is a **task management application** built in **Ruby on Rails**.
+The primary domain entities for this app are outlined below.
+For an authoritative overview of relationships, `schema.rb` is the source of truth.
+
+---
+
+## App Mode
+
+The Taskify app currently runs as a single-tenant application. Each user manages their own tasks with role-based permissions.
+
+---
+
+## Users and Authentication
+
+* **User**: The main entity for authentication and authorization.
+  All tasks and permissions are tied to users.
+* **Authentication**: Handled by Devise with standard email/password authentication.
+* **Authorization**: Managed by Pundit policies for different user roles.
+
+### User Roles
+
+Users have one of three roles:
+
+* **admin** (0): Full access to all tasks and users
+* **task_maker** (1): Can create and assign tasks, view own tasks and assigned tasks
+* **task_doer** (2): Can only view and work on tasks assigned to them
+
+---
+
+## Tasks
+
+The core of Taskify is the `task` model. Each task has:
+
+* `title` (required, max 50 characters)
+* `description` (optional, max 200 characters)  
+* `status` ('pending' or 'completed')
+* `priority` (0=low, 1=medium, 2=high)
+* `category` (optional string)
+* `due_date` (optional datetime)
+* `user_id` (creator - required)
+* `assignee_id` (optional - who the task is assigned to)
+
+### Task Relationships
+
+* `belongs_to :user` (creator)
+* `belongs_to :assignee, class_name: "User", optional: true`
+
+### Task Features
+
+* **Search**: Full-text search using PostgreSQL with tsvector for Spanish language
+* **Filtering**: By status, priority, category, assignee
+* **Scoping**: Role-based visibility with `.visible_to_user(user)` scope
+* **Indexing**: Optimized database indexes for common query patterns
+
+---
+
+## Task Concerns
+
+Tasks include several concerns for modularity:
+
+* **Categorizable**: Manages task categories and filtering
+* **Notifiable**: Handles notifications related to task changes
+* **Auditable**: Tracks changes to specified attributes
+* **TimeFormattable**: Provides date/time formatting helpers
+
+---
+
+## Notifications
+
+Basic notification system stored in `notification` records:
+
+* References a `user`
+* References a `notifiable` (polymorphic association)
+* Tracks read/unread status
+
+Currently used for due date alerts and task assignments.
+
+---
+
+## Search and Indexing
+
+Tasks support full-text search using:
+
+* PostgreSQL tsvector with Spanish language configuration
+* Indexes on commonly queried fields (status, priority, due_date, category)
+* Composite indexes for user-specific queries
+* ILIKE-based search as fallback for simple contains queries
+
+---
+
+## Role-Based Access Control
+
+Access control is managed through:
+
+* **Pundit policies** for controller-level authorization
+* **Model-level scopes** like `visible_to_user(user)` for data access
+* **Instance methods** like `can_be_viewed_by?(user)` and `can_be_edited_by?(user)`
+
+### Access Patterns
+
+* **Admins**: See all tasks
+* **Task Makers**: See tasks they created + tasks assigned to them  
+* **Task Doers**: See only tasks assigned to them
+
+---
+
+## Performance Optimizations
+
+* **Database indexing**: Comprehensive indexes for common query patterns
+* **Pagination**: Kaminari with 10 items per page
+* **Scoped queries**: Optimized ActiveRecord scopes to prevent N+1 queries
+* **Caching**: Instance variable caching for expensive calculations
+
+---
+
+## Frontend Architecture
+
+* **Styling**: Custom CSS with CSS variables for theming
+* **Icons**: Custom icon system using CSS pseudo-elements  
+* **Interactivity**: Stimulus controllers for client-side behavior
+* **Charts**: Chart.js integration for statistics visualization
+* **Animations**: CSS keyframe animations for enhanced UX
+
+### Key Stimulus Controllers
+
+* `theme_controller.js`: Dark/light mode switching
+* `chart_controller.js`: Statistics charts rendering
+* `search_controller.js`: Real-time search functionality
+* `settings_controller.js`: Settings panel management
+* `performance_controller.js`: Performance monitoring
+
+---
+
+## Data Patterns
+
+### Task Status Management
+
+Tasks follow a simple state machine:
+* `pending` → `completed`
+* Completion updates `updated_at` timestamp
+* Due date calculations for overdue/due soon notifications
+
+### Priority System
+
+Three-tier priority system:
+* `low` (0): Green indicator
+* `medium` (1): Yellow/orange indicator  
+* `high` (2): Red indicator
+
+### Category System
+
+Flexible string-based categories:
+* User-defined category names
+* No predefined category list
+* Searchable and filterable
+
+---
+
+✅ **Tip:** For detailed schema relationships, always consult `schema.rb`.

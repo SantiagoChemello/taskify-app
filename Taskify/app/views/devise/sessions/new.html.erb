@@ -13,6 +13,19 @@
 
       <!-- Form -->
       <div class="auth-form">
+        <!-- Display flash messages -->
+        <% if alert %>
+          <div class="alert alert-danger" data-turbo-cache="false">
+            <div class="alert-header">
+              <span class="icon icon-warning"></span>
+              <h4 class="alert-title">Error de autenticación</h4>
+            </div>
+            <div class="alert-content">
+              <%= alert %>
+            </div>
+          </div>
+        <% end %>
+
         <%= form_for(resource, as: resource_name, url: session_path(resource_name), local: true, class: "form", data: { turbo: false }) do |f| %>
           <div class="form-group">
             <%= f.label :email, "Correo Electrónico", class: "form-label" %>

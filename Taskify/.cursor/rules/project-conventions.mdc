@@ -1,0 +1,147 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Taskify Code Conventions & Guidelines
+
+This rule serves as high-level documentation for how you should write code for the **Taskify** codebase.
+
+## Project Tech Stack
+
+* **Web framework:** Ruby on Rails 7.2+
+
+  * RSpec + FactoryBot for testing
+  * Sprockets for asset pipeline  
+  * Hotwire Turbo/Stimulus for SPA-like UI/UX
+  * Custom CSS with CSS animations and variables for styles
+  * Custom icon system using CSS pseudo-elements
+  * Chart.js for data visualization
+* **Database:** PostgreSQL with UUID primary keys
+* **Authentication:** Devise
+* **Authorization:** Pundit
+* **Pagination:** Kaminari
+* **External:** None currently implemented
+
+---
+
+## Project conventions
+
+These conventions should be used when writing code for **Taskify**.
+
+---
+
+### Convention 1: Minimize dependencies—vanilla Rails is plenty
+
+Dependencies are a natural part of building software, but we aim to minimize them when possible to keep this open-source codebase easy to understand, maintain, and contribute to.
+
+* Push Rails to its limits before adding new dependencies.
+* When a new dependency is added, there must be a strong technical or business reason to add it.
+* When adding dependencies, you should favor old and reliable over new and flashy.
+
+---
+
+### Convention 2: Leverage POROs and concerns over "service objects"
+
+This codebase adopts a **skinny controller, fat models** convention. We do have a `app/services/` folder but use it sparingly.
+
+* Organize large pieces of business logic into Rails concerns and POROs (Plain Old Ruby Objects).
+* The current codebase uses concerns like `Categorizable`, `Notifiable`, `Auditable`, and `TimeFormattable` for shared functionality.
+* When concerns are used for code organization, they should be organized around the **traits of a model**, not just to move code elsewhere.
+* When possible, models should answer questions about themselves—for example, we have methods like:
+
+  ```ruby
+  task.completed?
+  task.overdue?
+  task.can_be_viewed_by?(user)
+  ```
+
+  rather than something more service-like:
+
+  ```ruby
+  TaskStatusQuery.new(task).completed?
+  ```
+
+---
+
+### Convention 3: Leverage Hotwire, write semantic HTML, CSS, and JS, prefer server-side solutions
+
+* Native HTML is always preferred over JS-based components:
+
+  * Example 1: Use `<dialog>` element for modals instead of creating a custom component.
+  * Example 2: Use `<details><summary>...</summary></details>` for disclosures rather than custom components.
+* Leverage Turbo frames to break up the page over JS-driven client-side solutions:
+
+  * Example: Use Turbo Streams for dynamic updates like filtering tasks.
+* Leverage query params in the URL for state over local storage and sessions. If absolutely necessary, use the database for persistent state.
+* Use Turbo streams to enhance functionality, but do not solely depend on them.
+* Format currencies, numbers, dates, and other values server-side, then pass them to Stimulus controllers for display only.
+* Keep client-side code for where it truly shines. For example, theme switching and chart rendering are cases where client-side solutions are appropriate.
+* Use the custom icon system defined in CSS - icons are created using CSS pseudo-elements and the `.icon` class with specific icon classes like `.icon-plus`, `.icon-edit`, etc.
+
+The Hotwire suite (Turbo/Stimulus) works very well with these native elements, and we optimize for this.
+
+---
+
+### Convention 4: Optimize for simplicity and clarity
+
+All code should maximize readability and simplicity.
+
+* Prioritize good OOP domain design over performance.
+* Only focus on performance for critical and global areas of the codebase; otherwise, don't sweat the small stuff.
+
+  * Example 1: Be mindful of loading large data payloads (e.g., all tasks) in global layouts.
+  * Example 2: Avoid N+1 queries - we have proper indexing and scoping in place.
+
+---
+
+### Convention 5: Use RSpec + FactoryBot for testing, minimize fixtures
+
+The codebase uses RSpec with FactoryBot for testing to provide flexibility and maintainability.
+
+* Always use RSpec and FactoryBot for testing.
+* Keep factories simple and focused. Create variations in tests rather than complex factory hierarchies.
+* Take a minimal approach to testing—only test the absolutely critical code paths that will significantly increase developer confidence.
+
+---
+
+#### Convention 5a: Write minimal, effective tests
+
+* Use system tests sparingly, as they increase the time to complete the test suite.
+* Only write tests for critical and important code paths.
+* Write tests as you go, when required.
+* Take a practical approach to testing. Tests are effective when their presence *significantly increases confidence in the codebase*.
+
+Examples of necessary vs. unnecessary tests:
+
+```ruby
+# GOOD!!
+# Necessary test - critical domain logic
+it "completes a task and records completion timestamp" do
+  task = create(:task, status: 'pending')
+  task.update!(status: 'completed')
+
+  expect(task.completed?).to be true
+  expect(task.updated_at).to be_present
+end
+
+# BAD!!
+# Unnecessary test - testing ActiveRecord itself
+it "saves a task" do
+  task = build(:task)
+  expect(task.save).to be true
+end
+```
+
+---
+
+### Convention 6: Use ActiveRecord for complex validations, DB for simple ones, keep business logic out of DB
+
+* Enforce `NOT NULL` constraints, unique indexes, and other simple validations in the database.
+* ActiveRecord validations *may* mirror the DB-level ones but are not always required. They are useful for form errors and convenience.
+* Use client-side form validation when possible (we have Stimulus controllers for this).
+* Keep complex validations and business logic in ActiveRecord models—not in the database.
+
+
+
+

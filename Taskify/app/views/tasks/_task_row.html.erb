@@ -12,6 +12,35 @@
     <% end %>
   </td>
   <td>
+    <% if can_assign_task?(task) %>
+      <%= form_with model: task, url: assign_task_path(task), method: :patch, local: false, class: "assignment-form", data: { turbo_method: :patch } do |f| %>
+        <%= f.select :assignee_id, 
+            [['Sin asignar', nil]] + 
+            User.where(role: ['task_doer', 'task_maker']).order(:name).map { |user| 
+              ["#{user.name} (#{user.role_label})", user.id] 
+            },
+            { selected: task.assignee_id },
+            { 
+              class: "form-select assignment-select",
+              onchange: "this.form.submit()",
+              data: { task_id: task.id }
+            } %>
+      <% end %>
+    <% else %>
+      <% if task.assigned? %>
+        <span class="assignee-badge">
+          <span class="icon icon-user"></span>
+          <%= task.assignee_name %>
+          <% if task.assignee_id == current_user.id %>
+            <span class="text-sm">(Tú)</span>
+          <% end %>
+        </span>
+      <% else %>
+        <span class="assignee-badge unassigned">Sin asignar</span>
+      <% end %>
+    <% end %>
+  </td>
+  <td>
     <span class="priority-badge priority-<%= task.priority %>">
       <span class="icon icon-priority-<%= task.priority %>"></span>
       <%= task.priority_label_es %>
@@ -34,7 +63,7 @@
   </td>
   <td>
     <div class="task-actions">
-      <% if task.status == 'pending' %>
+      <% if task.status == 'pending' && (task.assignee_id == current_user.id || task.can_be_edited_by?(current_user)) %>
         <%= button_to complete_task_path(task),
             method: :patch,
             class: "btn btn-success btn-sm",
@@ -47,19 +76,24 @@
           Completar
         <% end %>
       <% end %>
-      <%= link_to edit_task_path(task), class: "btn btn-secondary btn-sm", data: { turbo_frame: "_top" } do %>
-        <span class="icon icon-edit"></span>
-        Editar
-      <% end %>
-      <%= button_to task_path(task), method: :delete, 
-          class: "btn btn-danger btn-sm",
-          local: false,
-          data: { 
-            confirm: "¿Estás seguro de eliminar esta tarea?",
-            turbo_method: :delete
-          } do %>
-        <span class="icon icon-delete"></span>
-        Eliminar
+      
+      <% if task.can_be_edited_by?(current_user) %>
+        <%= link_to edit_task_path(task), class: "btn btn-secondary btn-sm", data: { turbo_frame: "_top" } do %>
+          <span class="icon icon-edit"></span>
+          Editar
+        <% end %>
+        <%= button_to task_path(task), method: :delete, 
+            class: "btn btn-danger btn-sm",
+            local: false,
+            data: { 
+              confirm: "¿Estás seguro de eliminar esta tarea?",
+              turbo_method: :delete
+            } do %>
+          <span class="icon icon-delete"></span>
+          Eliminar
+        <% end %>
+      <% elsif current_user.task_doer? && task.assignee_id == current_user.id %>
+        <span class="text-gray-500 text-sm">Solo lectura</span>
       <% end %>
     </div>
   </td>

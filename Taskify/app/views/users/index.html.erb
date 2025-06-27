@@ -1,0 +1,121 @@
+<% content_for :title, "Gestión de Usuarios" %>
+
+<div class="page-header">
+  <div class="page-header-content">
+    <div class="page-title-section">
+      <h1 class="page-title">
+        <span class="icon icon-user"></span>
+        Gestión de Usuarios
+      </h1>
+      <p class="page-subtitle">Administra los usuarios del sistema</p>
+    </div>
+    <div class="page-actions">
+      <%= link_to new_user_path, class: "btn btn-primary" do %>
+        <span class="icon icon-plus"></span>
+        Nuevo Usuario
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="main-content">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">
+        <span class="icon icon-user"></span>
+        Usuarios del Sistema
+        <span class="badge">(<%= @users.count %>)</span>
+      </h3>
+    </div>
+    
+    <div class="card-body">
+      <% if @users.any? %>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Tareas Creadas</th>
+                <th>Tareas Asignadas</th>
+                <th>Fecha de Registro</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @users.each do |user| %>
+                <tr>
+                  <td>
+                    <div class="user-info">
+                      <span class="icon icon-user"></span>
+                      <strong><%= user.name %></strong>
+                      <% if user == current_user %>
+                        <span class="badge badge-info">Tú</span>
+                      <% end %>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="text-secondary"><%= user.email %></span>
+                  </td>
+                  <td>
+                    <span class="role-badge role-<%= user.role %>">
+                      <%= user.role_label %>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="stat-number">
+                      <%= user.tasks.count %>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="stat-number">
+                      <%= user.assigned_tasks.count %>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="date-text">
+                      <%= user.created_at.strftime('%d/%m/%Y') %>
+                    </span>
+                  </td>
+                  <td>
+                    <div class="actions">
+                      <%= link_to user_path(user), class: "btn btn-primary btn-sm" do %>
+                        <span class="icon icon-info"></span>
+                        Info
+                      <% end %>
+                      
+                      <% unless user == current_user %>
+                        <%= link_to user_path(user), 
+                            method: :delete,
+                            class: "btn btn-danger btn-sm",
+                            data: { 
+                              confirm: "¿Estás seguro de eliminar a #{user.name}? Esta acción no se puede deshacer."
+                            } do %>
+                          <span class="icon icon-delete"></span>
+                          Eliminar
+                        <% end %>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <span class="icon icon-user"></span>
+          </div>
+          <h3>No hay usuarios registrados</h3>
+          <p>Comienza creando el primer usuario del sistema.</p>
+          <%= link_to new_user_path, class: "btn btn-primary" do %>
+            <span class="icon icon-plus"></span>
+            Crear Primer Usuario
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div> 

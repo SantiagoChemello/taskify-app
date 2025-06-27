@@ -28,16 +28,20 @@
       </div>
     <% end %>
 
-    <%= link_to new_task_path, class: "btn btn-primary notification-item", data: { turbo_frame: "_top" } do %>
-      <span class="icon icon-plus"></span>
-      Nueva Tarea
+    <% if current_user.can_create_tasks? %>
+      <%= link_to new_task_path, class: "btn btn-primary notification-item", data: { turbo_frame: "_top" } do %>
+        <span class="icon icon-plus"></span>
+        Nueva Tarea
+      <% end %>
     <% end %>
   </div>
 <% else %>
   <div class="notifications">
-    <%= link_to new_task_path, class: "btn btn-primary notification-item", data: { turbo_frame: "_top" } do %>
-      <span class="icon icon-plus"></span>
-      Nueva Tarea
+    <% if current_user.can_create_tasks? %>
+      <%= link_to new_task_path, class: "btn btn-primary notification-item", data: { turbo_frame: "_top" } do %>
+        <span class="icon icon-plus"></span>
+        Nueva Tarea
+      <% end %>
     <% end %>
   </div>
 <% end %>
@@ -50,6 +54,7 @@
         <tr>
           <th>Tarea</th>
           <th>Categoría</th>
+          <th>Asignado a</th>
           <th>Prioridad</th>
           <th>Estado</th>
           <th>Fecha Límite</th>
@@ -77,6 +82,8 @@
     <% if params[:query].present? || params[:status].present? || params[:category].present? || params[:priority].present? %>
       <p>No se encontraron tareas que coincidan con los filtros seleccionados.</p>
       <%= link_to "Ver todas las tareas", tasks_path, class: "btn btn-secondary" %>
+    <% elsif current_user.task_doer? %>
+      <p>No tienes tareas asignadas aún. Las tareas aparecerán aquí cuando te las asignen.</p>
     <% else %>
       <p>Crea tu primera tarea para comenzar a organizarte.</p>
       <%= link_to "Crear Primera Tarea", new_task_path, class: "btn btn-primary", data: { turbo_frame: "_top" } %>
