@@ -1,43 +1,115 @@
-# Taskify: Una aplicación de gestión de tareas
+# Taskify: Task Management Application
 
-Taskify es una aplicación web minimalista y elegante para gestionar tus tareas diarias. Diseñada para ser simple pero potente, te ayuda a organizar tus actividades personales y profesionales de manera eficiente, sin complicaciones innecesarias.
+Taskify is a minimalist and elegant web application for managing your daily tasks. Designed to be simple yet powerful, it helps you organize your personal and professional activities efficiently, without unnecessary complications.
 
-## Algunas características de Taskify
+## Features
 
-- 📝 Organiza tus tareas de forma intuitiva y visual
-- 🎯 Establece prioridades y fechas límite fácilmente
-- 👥 Colabora con tu equipo en tiempo real
-- 📱 Accede desde cualquier dispositivo, en cualquier momento
-- 🎨 Interfaz limpia y minimalista que no distrae
-- 🔔 Notificaciones inteligentes para no perder nada importante
+- 📝 Organize tasks intuitively and visually
+- 🎯 Set priorities and deadlines easily
+- 👥 Collaborate with your team in real-time
+- 📱 Access from any device, anytime
+- 🎨 Clean and minimalist interface that doesn't distract
+- 🔔 Smart notifications so you don't miss anything important
 
-## Configuración Local
+## Requirements
 
-### Requisitos
+Before running the project, ensure you have the following installed:
 
-- Ruby 3.4.4
-- PostgreSQL 14 o superior
-- Node.js 18 o superior
-- Yarn
+- **Ruby 3.4.4** (check with `ruby -v`)
+- **PostgreSQL 14 or higher** (check with `psql --version`)
+- **Node.js 18 or higher** (check with `node -v`)
+- **npm** (comes with Node.js)
 
-### Instalación Rápida
+## Quick Setup
+
+1. **Navigate to the project directory:**
+   ```bash
+   cd Taskify
+   ```
+
+2. **Install Ruby dependencies:**
+   ```bash
+   bundle install
+   ```
+
+3. **Install JavaScript dependencies:**
+   ```bash
+   npm install
+   ```
+
+4. **Set up the database:**
+   ```bash
+   rails db:create
+   rails db:migrate
+   rails db:seed  # Creates demo data and users
+   ```
+
+5. **Start the server:**
+   ```bash
+   rails server
+   ```
+
+The application will be available at `http://localhost:3000`
+
+## Demo Credentials
+
+After running `rails db:seed`, you can use these accounts to test the application:
+
+**Admin:**
+- Email: `admin@taskify.com`
+- Password: `password123`
+
+**Task Makers (can create and assign tasks):**
+- Email: `manager@taskify.com` | Password: `password123`
+- Email: `supervisor@taskify.com` | Password: `password123`
+
+**Task Doers (can complete assigned tasks):**
+- Email: `worker1@taskify.com` | Password: `password123`
+- Email: `worker2@taskify.com` | Password: `password123`
+
+## Running with Tailwind CSS Watcher
+
+To run both the Rails server and Tailwind CSS watcher simultaneously:
 
 ```bash
-# 1. Clona el repositorio
-git clone https://github.com/SantiagoChemello/taskify_app.git
-cd taskify
-
-# 2. Instala las dependencias
-bundle install
-yarn install
-
-# 3. Configura la base de datos
-rails db:create
-rails db:migrate
-rails db:seed  # Crea datos iniciales
-
-# 4. Inicia el servidor
-rails server
+bin/dev
 ```
 
-La aplicación estará disponible en `http://localhost:3000`
+This uses the `Procfile.dev` to start both processes.
+
+## Troubleshooting
+
+- **Database connection errors:** Ensure PostgreSQL is running (`brew services start postgresql` on macOS)
+- **Asset compilation errors:** Clear the cache with `rails tmp:clear`
+- **Port already in use:** Stop any existing Rails server or use a different port: `rails server -p 3001`
+
+## Tech Stack
+
+### Backend
+- **Ruby 3.4.4** - Programming language
+- **Rails 7.2.2** - Web framework
+- **PostgreSQL** - Database
+- **Puma** - Web server
+
+### Frontend
+- **Tailwind CSS** - Utility-first CSS framework
+- **Hotwire** - Modern web framework (Turbo + Stimulus)
+- **ViewComponent** - View components for Rails
+- **Chart.js** - Data visualization library
+- **Chartkick** - Beautiful charts for Rails
+
+### Authentication & Authorization
+- **Devise** - Authentication solution
+- **Pundit** - Authorization system
+
+### JavaScript
+- **Importmap** - ES module import maps (no bundler required)
+- **Stimulus** - JavaScript framework
+- **Turbo** - SPA-like page accelerator
+
+### Additional Tools
+- **Kaminari** - Pagination
+- **Sprockets** - Asset pipeline
+- **RSpec** - Testing framework
+- **Factory Bot** - Test data generation
+- **Lookbook** - Component previews (development)
