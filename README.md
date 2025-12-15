@@ -2,6 +2,8 @@
 
 Taskify is a minimalist and elegant web application for managing your daily tasks. Designed to be simple yet powerful, it helps you organize your personal and professional activities efficiently, without unnecessary complications.
 
+<img width="968" height="446" alt="Screenshot 2025-12-15 at 19 07 13" src="https://github.com/user-attachments/assets/ca87112e-c320-49ca-8fb3-3dd8a4239b77" />
+
 ## Features
 
 - 📝 Organize tasks intuitively and visually
@@ -83,33 +85,34 @@ This uses the `Procfile.dev` to start both processes.
 - **Asset compilation errors:** Clear the cache with `rails tmp:clear`
 - **Port already in use:** Stop any existing Rails server or use a different port: `rails server -p 3001`
 
-## Tech Stack
+## 🧰 Tech Stack
 
-### Backend
-- **Ruby 3.4.4** - Programming language
-- **Rails 7.2.2** - Web framework
-- **PostgreSQL** - Database
-- **Puma** - Web server
+```ruby
+# Backend
+Ruby 3.4.4        # Programming language
+Rails 7.2.2       # Web framework
+PostgreSQL        # Database
+Puma              # Web server
 
-### Frontend
-- **Tailwind CSS** - Utility-first CSS framework
-- **Hotwire** - Modern web framework (Turbo + Stimulus)
-- **ViewComponent** - View components for Rails
-- **Chart.js** - Data visualization library
-- **Chartkick** - Beautiful charts for Rails
+# Frontend
+Tailwind CSS      # Utility-first CSS framework
+Hotwire           # Turbo + Stimulus
+ViewComponent     # View components for Rails
+Chart.js          # Data visualization library
+Chartkick         # Charts for Rails
 
-### Authentication & Authorization
-- **Devise** - Authentication solution
-- **Pundit** - Authorization system
+# Authentication & Authorization
+Devise            # Authentication solution
+Pundit            # Authorization system
 
-### JavaScript
-- **Importmap** - ES module import maps (no bundler required)
-- **Stimulus** - JavaScript framework
-- **Turbo** - SPA-like page accelerator
+# JavaScript
+Importmap         # ES module import maps (no bundler required)
+Stimulus          # JavaScript framework
+Turbo             # SPA-like page accelerator
 
-### Additional Tools
-- **Kaminari** - Pagination
-- **Sprockets** - Asset pipeline
-- **RSpec** - Testing framework
-- **Factory Bot** - Test data generation
-- **Lookbook** - Component previews (development)
+# Additional Tools
+Kaminari          # Pagination
+Sprockets         # Asset pipeline
+RSpec             # Testing framework
+Factory Bot       # Test data generation
+Lookbook          # Component previews (development)
