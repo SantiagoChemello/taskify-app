@@ -23,5 +23,12 @@ module Taskify
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # ViewComponent configuration (conditional)
+    if defined?(ViewComponent)
+      config.view_component.default_preview_layout = "application"
+      config.view_component.preview_paths << Rails.root.join("app/components/previews")
+      config.view_component.show_previews = Rails.env.development?
+    end
   end
 end

@@ -1,6 +1,11 @@
 Rails.application.routes.draw do
   devise_for :users
   
+  # Component previews (development only)
+  if Rails.env.development? && defined?(Lookbook)
+    mount Lookbook::Engine, at: "/lookbook"
+  end
+  
   # Dashboard route
   get 'dashboard', to: 'dashboard#index'
   
