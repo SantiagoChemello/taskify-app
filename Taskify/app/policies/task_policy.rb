@@ -24,11 +24,11 @@ class TaskPolicy < ApplicationPolicy
 
   def assign?
     return false unless user.present?
-    
+
     case user.role
-    when 'admin'
+    when "admin"
       true
-    when 'task_maker'
+    when "task_maker"
       # For new tasks, task_makers can assign (they will own it)
       # For existing tasks, only if they own it
       record.new_record? || record.user_id == user.id
@@ -39,13 +39,13 @@ class TaskPolicy < ApplicationPolicy
 
   def complete?
     return false unless user.present?
-    
+
     case user.role
-    when 'admin'
+    when "admin"
       true
-    when 'task_maker'
+    when "task_maker"
       record.user_id == user.id || record.assignee_id == user.id
-    when 'task_doer'
+    when "task_doer"
       record.assignee_id == user.id
     else
       false
@@ -68,4 +68,4 @@ class TaskPolicy < ApplicationPolicy
   def assigned_to_user?
     record.assignee_id == user.id
   end
-end 
+end

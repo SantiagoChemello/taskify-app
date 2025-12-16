@@ -11,7 +11,7 @@ RSpec.describe "Statistics", type: :request do
     context "with no tasks" do
       it "displays empty state" do
         get statistics_path
-        
+
         expect(response).to have_http_status(:success)
         expect(response.body).to include("No hay estadísticas aún")
         expect(response.body).to include("Crear Primera Tarea")
@@ -20,7 +20,7 @@ RSpec.describe "Statistics", type: :request do
 
       it "shows zero statistics" do
         get statistics_path
-        
+
         expect(response.body).to include("0") # Total tasks
         expect(response.body).to include("0.0%") # Completion percentage
       end
@@ -35,9 +35,9 @@ RSpec.describe "Statistics", type: :request do
 
       it "calculates basic statistics correctly" do
         get statistics_path
-        
+
         expect(response).to have_http_status(:success)
-        
+
         # Should show 5 total tasks
         expect(response.body).to include(">5<")
         # Should show 2 completed tasks
@@ -50,7 +50,7 @@ RSpec.describe "Statistics", type: :request do
 
       it "displays statistics cards" do
         get statistics_path
-        
+
         expect(response.body).to include("Total de Tareas")
         expect(response.body).to include("Completadas")
         expect(response.body).to include("Pendientes")
@@ -63,7 +63,7 @@ RSpec.describe "Statistics", type: :request do
 
       it "includes Chart.js data for overall completion" do
         get statistics_path
-        
+
         expect(response.body).to include('data-controller="chart"')
         expect(response.body).to include('data-chart-type-value="doughnut"')
         expect(response.body).to include('&quot;labels&quot;:[&quot;Completadas&quot;,&quot;Pendientes&quot;]')
@@ -73,7 +73,7 @@ RSpec.describe "Statistics", type: :request do
 
       it "includes Chart.js data for priority distribution" do
         get statistics_path
-        
+
         expect(response.body).to include('data-chart-type-value="bar"')
         expect(response.body).to include('&quot;labels&quot;:[&quot;Alta&quot;,&quot;Media&quot;,&quot;Baja&quot;]')
         expect(response.body).to include('&quot;label&quot;:&quot;Completadas&quot;')
@@ -82,7 +82,7 @@ RSpec.describe "Statistics", type: :request do
 
       it "displays category statistics table" do
         get statistics_path
-        
+
         expect(response.body).to include("📁 Estadísticas por Categoría")
         expect(response.body).to include("Trabajo")
         expect(response.body).to include("Personal")
@@ -92,7 +92,7 @@ RSpec.describe "Statistics", type: :request do
 
       it "displays priority statistics table" do
         get statistics_path
-        
+
         expect(response.body).to include("🎯 Estadísticas por Prioridad")
         expect(response.body).to include("Alta")
         expect(response.body).to include("Media")
@@ -101,12 +101,12 @@ RSpec.describe "Statistics", type: :request do
 
       it "calculates category completion percentages correctly" do
         get statistics_path
-        
+
         # Trabajo category: 1 completed, 1 pending = 50%
         # Personal category: 1 completed, 0 pending = 100%
         # Estudios category: 0 completed, 1 pending = 0%
         # Sin categoría: 0 completed, 1 pending = 0%
-        
+
         expect(response.body).to include("50.0%") # trabajo
         expect(response.body).to include("100.0%") # personal
         expect(response.body).to include("0.0%") # estudios and uncategorized
@@ -114,11 +114,11 @@ RSpec.describe "Statistics", type: :request do
 
       it "calculates priority completion percentages correctly" do
         get statistics_path
-        
+
         # High priority: 1 completed, 1 pending = 50%
         # Medium priority: 1 completed, 1 pending = 50%
         # Low priority: 0 completed, 1 pending = 0%
-        
+
         expect(response.body).to include("50.0%") # high and medium
         expect(response.body).to include("0.0%") # low
       end
@@ -132,7 +132,7 @@ RSpec.describe "Statistics", type: :request do
 
       it "displays due date statistics" do
         get statistics_path
-        
+
         expect(response.body).to include("📅 Tareas por Fecha Límite")
         expect(response.body).to include("⚠️ Vencidas")
         expect(response.body).to include("🕐 Vencen Hoy")
@@ -142,13 +142,13 @@ RSpec.describe "Statistics", type: :request do
 
       it "counts due date categories correctly" do
         get statistics_path
-        
+
         # Should count each category correctly - just check the sections exist with numbers
         expect(response.body).to include("⚠️ Vencidas")
-        expect(response.body).to include("🕐 Vencen Hoy") 
+        expect(response.body).to include("🕐 Vencen Hoy")
         expect(response.body).to include("📆 Esta Semana")
         expect(response.body).to include("📝 Sin Fecha Límite")
-        
+
         # Verify there are some counts present (specific numbers may vary)
         expect(response.body).to match(/color: #dc2626;">1</)   # overdue count
         expect(response.body).to match(/color: #ea580c;">1</)   # due today count
@@ -166,7 +166,7 @@ RSpec.describe "Statistics", type: :request do
 
         it "shows positive insight" do
           get statistics_path
-          
+
           expect(response.body).to include("¡Excelente trabajo!")
           expect(response.body).to include("80.0%")
           expect(response.body).to include("Mantén el impulso")
@@ -181,7 +181,7 @@ RSpec.describe "Statistics", type: :request do
 
         it "shows encouraging insight" do
           get statistics_path
-          
+
           expect(response.body).to include("Buen progreso")
           expect(response.body).to include("60.0%")
           expect(response.body).to include("¡Casi llegas a la meta!")
@@ -196,7 +196,7 @@ RSpec.describe "Statistics", type: :request do
 
         it "shows improvement suggestion" do
           get statistics_path
-          
+
           expect(response.body).to include("Oportunidad de mejora")
           expect(response.body).to include("20.0%")
           expect(response.body).to include("¡Enfócate en terminar algunas!")
@@ -210,7 +210,7 @@ RSpec.describe "Statistics", type: :request do
 
         it "shows overdue warning" do
           get statistics_path
-          
+
           expect(response.body).to include("Atención:")
           expect(response.body).to include("3 tareas vencidas")
           expect(response.body).to include("Priorízalas")
@@ -225,7 +225,7 @@ RSpec.describe "Statistics", type: :request do
 
         it "shows best performing category" do
           get statistics_path
-          
+
           expect(response.body).to include("Categoría estrella:")
           expect(response.body).to include("Trabajo")
           expect(response.body).to include("100.0%")
@@ -236,14 +236,14 @@ RSpec.describe "Statistics", type: :request do
     context "navigation" do
       it "includes link back to tasks" do
         get statistics_path
-        
+
         expect(response.body).to include("Volver a Tareas")
         expect(response.body).to include('href="/tasks"')
       end
 
       it "includes statistics navigation in tasks page" do
         get tasks_path
-        
+
         expect(response.body).to include("Estadísticas")
         expect(response.body).to include('href="/statistics"')
       end
@@ -256,7 +256,7 @@ RSpec.describe "Statistics", type: :request do
 
       it "only shows current user's statistics" do
         get statistics_path
-        
+
         # Should show only 1 task (current user's), not 6 total
         expect(response.body).to include(">1<") # total tasks
         expect(response.body).to include(">0<") # completed tasks
@@ -275,4 +275,4 @@ RSpec.describe "Statistics", type: :request do
       end
     end
   end
-end 
+end

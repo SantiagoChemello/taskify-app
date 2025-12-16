@@ -8,7 +8,7 @@ RSpec.describe User, type: :model do
     it { should validate_presence_of(:name) }
     it { should validate_presence_of(:role) }
     it { should validate_uniqueness_of(:email).case_insensitive.with_message(/has already been taken/) }
-    
+
     it 'validates email format' do
       user = build(:user, email: 'invalid-email')
       expect(user).not_to be_valid
@@ -71,4 +71,4 @@ RSpec.describe User, type: :model do
       end
     end
   end
-end 
+end

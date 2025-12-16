@@ -8,7 +8,7 @@ RSpec.describe NotifyDueTasksJob, type: :job do
     context 'when there are no due tasks' do
       it 'completes without processing' do
         create(:task, user: user, due_date: 2.days.from_now, status: 'pending')
-        
+
         NotifyDueTasksJob.perform_now
         # Since no tasks are due, the job should return early without logging
       end
@@ -23,14 +23,14 @@ RSpec.describe NotifyDueTasksJob, type: :job do
                     it 'processes all types of due tasks' do
          # Just verify the job runs without error and processes tasks
          expect { NotifyDueTasksJob.perform_now }.not_to raise_error
-         
+
           # Verify the scope works correctly - overdue, today, and tomorrow are all included
           expect(Task.due_soon.count).to eq(3) # overdue, due today, and due tomorrow
        end
 
        it 'groups tasks by user' do
          another_due_task = create(:task, user: another_user, title: 'Another User Task', due_date: Date.current, status: 'pending')
-         
+
          expect { NotifyDueTasksJob.perform_now }.not_to raise_error
           expect(Task.due_soon.count).to eq(4) # 3 from first user + 1 from second user
        end
@@ -38,7 +38,7 @@ RSpec.describe NotifyDueTasksJob, type: :job do
       it 'does not include completed tasks in processing' do
         initial_count = Task.due_soon.count
         create(:task, user: user, title: 'Another Completed', due_date: Date.current, status: 'completed')
-        
+
         # Completed tasks should not be included in due_soon scope
         expect(Task.due_soon.count).to eq(initial_count)
       end

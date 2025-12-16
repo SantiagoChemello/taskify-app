@@ -9,4 +9,4 @@ class DashboardPolicy < ApplicationPolicy
       scope
     end
   end
-end 
+end

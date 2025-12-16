@@ -115,4 +115,5 @@ Kaminari          # Pagination
 Sprockets         # Asset pipeline
 RSpec             # Testing framework
 Factory Bot       # Test data generation
+RuboCop           # Code style and quality linter
 Lookbook          # Component previews (development)

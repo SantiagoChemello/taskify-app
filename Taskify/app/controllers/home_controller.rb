@@ -1,6 +1,6 @@
 class HomeController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:index]
-  
+  skip_before_action :authenticate_user!, only: [ :index ]
+
   def index
     # Landing page - redirect to dashboard (Inicio) if user is already signed in
     if user_signed_in?
@@ -10,4 +10,4 @@ class HomeController < ApplicationController
       render :index
     end
   end
-end 
+end

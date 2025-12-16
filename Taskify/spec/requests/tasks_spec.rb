@@ -20,7 +20,7 @@ RSpec.describe "Tasks", type: :request do
       get new_task_path
       expect(response.body).to include("Prioridad")
       expect(response.body).to include("Alta")
-      expect(response.body).to include("Media") 
+      expect(response.body).to include("Media")
       expect(response.body).to include("Baja")
     end
 
@@ -146,7 +146,7 @@ RSpec.describe "Tasks", type: :request do
         low_task = create(:task, user: user, priority: 'low', title: 'Low Priority Task')
 
         get tasks_path
-        
+
         expect(response.body).to include("Alta")      # High priority in Spanish
         expect(response.body).to include("Media")     # Medium priority in Spanish
         expect(response.body).to include("Baja")      # Low priority in Spanish
@@ -155,14 +155,14 @@ RSpec.describe "Tasks", type: :request do
       it "displays priority badges with color coding" do
         task = create(:task, user: user, priority: 'high')
         get tasks_path
-        
+
         expect(response.body).to include("background-color: #ef4444")  # Red for high priority
       end
 
       it "displays creation dates and relative time" do
         task = create(:task, user: user, title: 'Date Test Task')
         get tasks_path
-        
+
         expect(response.body).to include("Creada:")
         expect(response.body).to include(task.created_at.strftime("%d/%m/%Y a las %H:%M"))
         expect(response.body).to include(task.created_at_relative_es)
@@ -172,19 +172,19 @@ RSpec.describe "Tasks", type: :request do
         overdue_task = create(:task, user: user, title: 'Overdue Task', due_date: 1.day.ago, status: 'pending')
         due_today_task = create(:task, user: user, title: 'Due Today Task', due_date: Date.current.end_of_day, status: 'pending')
         due_soon_task = create(:task, user: user, title: 'Due Soon Task', due_date: 1.day.from_now, status: 'pending')
-        
+
         get tasks_path
-        
+
         # Check for notification banners
         expect(response.body).to include("⚠️ Vencidas:")
         expect(response.body).to include("🕐 Hoy:")
         expect(response.body).to include("📅 Próximas:")
-        
+
         # Check for specific tasks in notifications
         expect(response.body).to include("Overdue Task")
         expect(response.body).to include("Due Today Task")
         expect(response.body).to include("Due Soon Task")
-        
+
         # Check for due status messages
         expect(response.body).to include("Vencida hace")
         expect(response.body).to include("Vence hoy")
@@ -195,9 +195,9 @@ RSpec.describe "Tasks", type: :request do
         overdue_task = create(:task, user: user, due_date: 1.day.ago, status: 'pending')
         due_soon_task = create(:task, user: user, due_date: 12.hours.from_now, status: 'pending')
         normal_due_task = create(:task, user: user, due_date: 1.week.from_now, status: 'pending')
-        
+
         get tasks_path
-        
+
         expect(response.body).to include("Vence:")
         # Overdue tasks should have darker red color
         expect(response.body).to include("color: #dc2626")
@@ -207,7 +207,7 @@ RSpec.describe "Tasks", type: :request do
 
       it "includes due date field in forms" do
         get new_task_path
-        
+
         expect(response.body).to include("Fecha límite (opcional)")
         expect(response.body).to include('name="task[due_date]"')
         expect(response.body).to include("Recibirás notificaciones cuando la tarea esté próxima a vencer")
@@ -222,13 +222,13 @@ RSpec.describe "Tasks", type: :request do
         high_task = create(:task, user: user, priority: 'high', title: 'High Task')
 
         get tasks_path
-        
+
         # Check that high priority appears before medium and low
         response_body = response.body
         high_position = response_body.index('High Task')
         medium_position = response_body.index('Medium Task')
         low_position = response_body.index('Low Task')
-        
+
         expect(high_position).to be < medium_position
         expect(medium_position).to be < low_position
       end
@@ -242,12 +242,12 @@ RSpec.describe "Tasks", type: :request do
       context "when sorting by priority" do
         it "sorts by priority first, then by creation date" do
           get tasks_path, params: { sort: 'priority' }
-          
+
           response_body = response.body
           old_high_position = response_body.index('Old High Task')
           medium_position = response_body.index('Medium Task')
           new_low_position = response_body.index('New Low Task')
-          
+
           # Priority order: high -> medium -> low
           expect(old_high_position).to be < medium_position
           expect(medium_position).to be < new_low_position
@@ -257,12 +257,12 @@ RSpec.describe "Tasks", type: :request do
       context "when sorting by creation date" do
         it "sorts by creation date only (newest first)" do
           get tasks_path, params: { sort: 'created_at' }
-          
+
           response_body = response.body
           new_low_position = response_body.index('New Low Task')
-          medium_position = response_body.index('Medium Task')  
+          medium_position = response_body.index('Medium Task')
           old_high_position = response_body.index('Old High Task')
-          
+
           # Creation date order: newest -> oldest
           expect(new_low_position).to be < medium_position
           expect(medium_position).to be < old_high_position
@@ -272,12 +272,12 @@ RSpec.describe "Tasks", type: :request do
       context "when no sort parameter is provided" do
         it "defaults to priority sorting" do
           get tasks_path
-          
+
           response_body = response.body
           old_high_position = response_body.index('Old High Task')
           medium_position = response_body.index('Medium Task')
           new_low_position = response_body.index('New Low Task')
-          
+
           # Should default to priority order
           expect(old_high_position).to be < medium_position
           expect(medium_position).to be < new_low_position
@@ -287,12 +287,12 @@ RSpec.describe "Tasks", type: :request do
       context "when providing invalid sort parameter" do
         it "defaults to priority sorting" do
           get tasks_path, params: { sort: 'invalid_sort' }
-          
+
           response_body = response.body
           old_high_position = response_body.index('Old High Task')
           medium_position = response_body.index('Medium Task')
           new_low_position = response_body.index('New Low Task')
-          
+
           # Should default to priority order
           expect(old_high_position).to be < medium_position
           expect(medium_position).to be < new_low_position
@@ -309,9 +309,9 @@ RSpec.describe "Tasks", type: :request do
       it "preserves status filter when changing sort order" do
         create(:task, user: user, status: 'pending', priority: 'high', title: 'Pending High')
         create(:task, user: user, status: 'completed', priority: 'low', title: 'Completed Low')
-        
+
         get tasks_path, params: { status: 'pending', sort: 'created_at' }
-        
+
         expect(response.body).to include("Pending High")
         expect(response.body).not_to include("Completed Low")
         expect(response.body).to include("Mis Tareas Pendientes")
@@ -320,7 +320,7 @@ RSpec.describe "Tasks", type: :request do
       it "preserves sort order when changing status filter" do
         # This test ensures that both parameters work together
         get tasks_path, params: { status: 'pending', sort: 'priority' }
-        
+
         expect(response.body).to include('selected="selected" value="priority"')
         expect(response.body).to include('selected="selected" value="pending"')
       end
@@ -464,12 +464,12 @@ RSpec.describe "Tasks", type: :request do
 
         it "displays category badges with correct labels and colors" do
           get tasks_path
-          
+
           # Check for category badges
           expect(response.body).to include("Trabajo")
           expect(response.body).to include("Personal")
           expect(response.body).to include("Custom_category")
-          
+
           # Check for category colors
           expect(response.body).to include("#3b82f6")  # Blue for trabajo
           expect(response.body).to include("#8b5cf6")  # Purple for personal
@@ -491,7 +491,7 @@ RSpec.describe "Tasks", type: :request do
     it "handles completing other users' tasks" do
       other_user = create(:user)
       other_task = create(:task, user: other_user)
-      
+
       patch complete_task_path(other_task)
       expect(response).to redirect_to(tasks_path)
       expect(flash[:alert]).to eq('Task not found.')
@@ -517,7 +517,7 @@ RSpec.describe "Tasks", type: :request do
     it "handles deleting other users' tasks" do
       other_user = create(:user)
       other_task = create(:task, user: other_user)
-      
+
       delete task_path(other_task)
       expect(response).to redirect_to(tasks_path)
       expect(flash[:alert]).to eq('Task not found.')
@@ -563,7 +563,7 @@ RSpec.describe "Tasks", type: :request do
     it "handles editing other users' tasks" do
       other_user = create(:user)
       other_task = create(:task, user: other_user)
-      
+
       get edit_task_path(other_task)
       expect(response).to redirect_to(tasks_path)
       expect(flash[:alert]).to eq('Task not found.')
@@ -645,7 +645,7 @@ RSpec.describe "Tasks", type: :request do
     context "when sync is successful" do
       it "redirects with success message when no tasks exist" do
         post sync_tasks_path
-        
+
         expect(response).to redirect_to(tasks_path)
         follow_redirect!
         expect(response.body).to include("Sincronización completada. Todas las tareas están actualizadas.")
@@ -653,9 +653,9 @@ RSpec.describe "Tasks", type: :request do
 
       it "syncs local tasks to cloud" do
         create(:task, user: user, title: "Test Task")
-        
+
         post sync_tasks_path
-        
+
         expect(response).to redirect_to(tasks_path)
         follow_redirect!
         expect(response.body).to include("tarea(s) enviada(s) a la nube")
@@ -663,14 +663,14 @@ RSpec.describe "Tasks", type: :request do
 
       it "shows sync button in the interface" do
         get tasks_path
-        
+
         expect(response.body).to include("🔄 Sincronizar")
         expect(response.body).to include("Sincronizar tareas con la nube")
       end
 
       it "disables sync button during submission" do
         get tasks_path
-        
+
         expect(response.body).to include('data-disable-with="Sincronizando..."')
       end
     end
@@ -683,14 +683,14 @@ RSpec.describe "Tasks", type: :request do
         allow(sync_service).to receive(:sync).and_return({
           success: false,
           message: "Error durante la sincronización: Network error",
-          stats: { uploaded: 0, downloaded: 0, conflicts: 0, errors: ["Network error"] }
+          stats: { uploaded: 0, downloaded: 0, conflicts: 0, errors: [ "Network error" ] }
         })
         allow(sync_service).to receive(:last_sync_time).and_return(nil)
       end
 
       it "handles sync errors gracefully" do
         post sync_tasks_path
-        
+
         expect(response).to redirect_to(tasks_path)
         follow_redirect!
         expect(response.body).to include("Error durante la sincronización")
@@ -851,7 +851,7 @@ RSpec.describe "Tasks", type: :request do
       it "only searches within current user's tasks" do
         other_user = create(:user)
         create(:task, user: other_user, title: "Other user project", description: "Should not appear")
-        
+
         get tasks_path, params: { query: 'project' }
         expect(response.body).to include("Complete project proposal")  # current user's task
         expect(response.body).not_to include("Other user project")     # other user's task
@@ -881,7 +881,7 @@ RSpec.describe "Tasks", type: :request do
           task_maker
           task_doer
           other_task_doer
-          
+
           get new_task_path
           expect(response.body).to include(task_maker.name)
           expect(response.body).to include(task_doer.name)
@@ -970,7 +970,7 @@ RSpec.describe "Tasks", type: :request do
           # Create the users first to ensure they exist
           task_doer
           other_task_doer
-          
+
           get new_task_path
           expect(response.body).to include(task_doer.name)
           expect(response.body).to include(other_task_doer.name)
@@ -1076,12 +1076,12 @@ RSpec.describe "Tasks", type: :request do
             # But we can test the policy logic directly
             expect(task_maker.admin?).to be_falsey
             expect(other_users_task.user_id).not_to eq(task_maker.id)
-            
+
             # The can_assign_task? helper should return false for other users' tasks
             controller = TasksController.new
             controller.instance_variable_set(:@current_user, task_maker)
             allow(controller).to receive(:current_user).and_return(task_maker)
-            
+
             expect(controller.send(:can_assign_task?, other_users_task)).to be_falsey
           end
         end
@@ -1373,20 +1373,20 @@ RSpec.describe "Tasks", type: :request do
       end
 
       describe "priority visibility for task_doers" do
-        let!(:high_priority_task) { create(:task, user: task_maker, assignee: task_doer, 
+        let!(:high_priority_task) { create(:task, user: task_maker, assignee: task_doer,
                                                 title: "High Priority Task", priority: 'high') }
-        let!(:medium_priority_task) { create(:task, user: task_maker, assignee: task_doer, 
+        let!(:medium_priority_task) { create(:task, user: task_maker, assignee: task_doer,
                                                   title: "Medium Priority Task", priority: 'medium') }
-        let!(:low_priority_task) { create(:task, user: task_maker, assignee: task_doer, 
+        let!(:low_priority_task) { create(:task, user: task_maker, assignee: task_doer,
                                                title: "Low Priority Task", priority: 'low') }
 
         it "displays priority information prominently for task prioritization" do
           get tasks_path
           expect(response).to have_http_status(:success)
-          
+
           # Verify priority column header is displayed
           expect(response.body).to include("Prioridad")
-          
+
           # Verify all priority badges are displayed with proper CSS classes
           expect(response.body).to include('priority-badge priority-high')
           expect(response.body).to include('priority-badge priority-medium')
@@ -1396,17 +1396,17 @@ RSpec.describe "Tasks", type: :request do
         it "shows color-coded priority labels in Spanish" do
           get tasks_path
           expect(response).to have_http_status(:success)
-          
+
           # Verify Spanish priority labels are displayed
           expect(response.body).to include('Alta')    # High priority
-          expect(response.body).to include('Media')   # Medium priority  
+          expect(response.body).to include('Media')   # Medium priority
           expect(response.body).to include('Baja')    # Low priority
         end
 
         it "includes priority icons for visual identification" do
           get tasks_path
           expect(response).to have_http_status(:success)
-          
+
           # Verify priority icons are present for quick visual identification
           expect(response.body).to include('icon-priority-high')
           expect(response.body).to include('icon-priority-medium')
@@ -1416,16 +1416,16 @@ RSpec.describe "Tasks", type: :request do
         it "allows task_doers to prioritize work based on visual cues" do
           get tasks_path
           expect(response).to have_http_status(:success)
-          
+
           # Verify that high priority tasks are visually distinct
           # This ensures Task Doers can quickly identify urgent work
           expect(response.body).to include('priority-high')    # Red styling for urgent tasks
           expect(response.body).to include('priority-medium')  # Yellow/orange for medium priority
           expect(response.body).to include('priority-low')     # Green for low priority
-          
+
           # Verify all assigned tasks show their priorities
           expect(response.body).to include("High Priority Task")
-          expect(response.body).to include("Medium Priority Task") 
+          expect(response.body).to include("Medium Priority Task")
           expect(response.body).to include("Low Priority Task")
         end
 
@@ -1436,7 +1436,7 @@ RSpec.describe "Tasks", type: :request do
           expect(response.body).to include('Alta')
           expect(response.body).to include('Media')
           expect(response.body).to include('Baja')
-          
+
           # Test priority display in all tasks view
           get tasks_path
           expect(response.body).to include('priority-badge')
@@ -1462,4 +1462,4 @@ RSpec.describe "Tasks", type: :request do
       end
     end
   end
-  end 
+  end

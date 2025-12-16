@@ -3,12 +3,12 @@ module Auditable
 
   included do
     has_many :audit_logs, as: :auditable, dependent: :destroy
-    
+
     # Callbacks para auditoría automática
     after_create :log_creation
     after_update :log_updates
     after_destroy :log_deletion
-    
+
     # Atributos a auditar por defecto
     class_attribute :audited_attributes, default: []
     class_attribute :audit_user_method, default: :current_user
@@ -16,7 +16,7 @@ module Auditable
 
   def audit_changes(user: nil, action: nil, details: {})
     user ||= try(audit_user_method)
-    
+
     audit_logs.create!(
       user: user,
       action: action || infer_action,
@@ -35,7 +35,7 @@ module Auditable
   end
 
   def changes_since(timestamp)
-    audit_logs.where('performed_at > ?', timestamp)
+    audit_logs.where("performed_at > ?", timestamp)
               .order(:performed_at)
   end
 
@@ -46,7 +46,7 @@ module Auditable
   end
 
   def last_modified_by
-    audit_logs.where(action: ['update', 'create'])
+    audit_logs.where(action: [ "update", "create" ])
               .order(:performed_at)
               .last
               &.user
@@ -65,8 +65,8 @@ module Auditable
 
   def log_creation
     audit_changes(
-      action: 'create',
-      details: { 
+      action: "create",
+      details: {
         message: "#{self.class.name} creado",
         initial_attributes: auditable_attributes
       }
@@ -75,9 +75,9 @@ module Auditable
 
   def log_updates
     return unless has_auditable_changes?
-    
+
     audit_changes(
-      action: 'update',
+      action: "update",
       details: {
         message: "#{self.class.name} actualizado",
         changed_attributes: changed_auditable_attributes
@@ -87,7 +87,7 @@ module Auditable
 
   def log_deletion
     audit_changes(
-      action: 'delete',
+      action: "delete",
       details: {
         message: "#{self.class.name} eliminado",
         final_attributes: auditable_attributes
@@ -119,7 +119,7 @@ module Auditable
 
   def format_changes_for_audit
     changes_to_audit = changed_auditable_attributes
-    
+
     changes_to_audit.transform_values do |change|
       {
         from: format_value_for_audit(change[0]),
@@ -141,22 +141,22 @@ module Auditable
 
   def infer_action
     if destroyed?
-      'delete'
+      "delete"
     elsif persisted? && saved_changes.any?
-      'update'
+      "update"
     elsif persisted?
-      'create'
+      "create"
     else
-      'unknown'
+      "unknown"
     end
   end
 
   def calculate_change_frequency
     return 0 if audit_logs.count < 2
-    
+
     time_span = audit_logs.maximum(:performed_at) - audit_logs.minimum(:performed_at)
     return 0 if time_span <= 0
-    
+
     (audit_logs.count.to_f / time_span.to_f * 1.day).round(2)
   end
 
@@ -186,8 +186,8 @@ module Auditable
     def most_active_records(limit: 10)
       joins(:audit_logs)
         .group("#{table_name}.id")
-        .order('COUNT(audit_logs.id) DESC')
+        .order("COUNT(audit_logs.id) DESC")
         .limit(limit)
     end
   end
-end 
+end

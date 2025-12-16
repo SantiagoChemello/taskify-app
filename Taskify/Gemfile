@@ -58,14 +58,16 @@ group :development, :test do
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
 
-  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
+  # Code style and quality [https://github.com/rubocop/rubocop]
+  gem "rubocop", require: false
+  # Omakase Ruby styling for Rails [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 end
 
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
-  
+
   # Component development & previews
   gem "lookbook"
 end

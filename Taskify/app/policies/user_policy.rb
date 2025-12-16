@@ -40,4 +40,4 @@ class UserPolicy < ApplicationPolicy
       end
     end
   end
-end 
+end

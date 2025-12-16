@@ -17,15 +17,15 @@ class User < ApplicationRecord
 
   # Role helper methods
   def admin?
-    role == 'admin'
+    role == "admin"
   end
 
   def task_maker?
-    role == 'task_maker'
+    role == "task_maker"
   end
 
   def task_doer?
-    role == 'task_doer'
+    role == "task_doer"
   end
 
   def can_create_tasks?
@@ -42,12 +42,12 @@ class User < ApplicationRecord
 
   def role_label
     case role
-    when 'admin'
-      'Administrador'
-    when 'task_maker'
-      'Creador de Tareas'
-    when 'task_doer'
-      'Ejecutor de Tareas'
+    when "admin"
+      "Administrador"
+    when "task_maker"
+      "Creador de Tareas"
+    when "task_doer"
+      "Ejecutor de Tareas"
     else
       role.humanize
     end

@@ -1,6 +1,6 @@
 class ApplicationComponent < ViewComponent::Base
   # Base component class for all ViewComponents in the application
-  
+
   private
 
   # Helper method for generating Tailwind CSS classes
@@ -12,4 +12,4 @@ class ApplicationComponent < ViewComponent::Base
   def conditional_class(condition, true_class, false_class = nil)
     condition ? true_class : false_class
   end
-end 
+end

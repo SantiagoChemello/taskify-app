@@ -32,4 +32,4 @@ class BadgeComponentPreview < ViewComponent::Preview
   def render_with_template
     render_with_template_content
   end
-end 
+end

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Task, type: :model do
   let(:user) { create(:user) }
-  
+
   describe 'validations' do
     it 'validates presence of title' do
       task = build(:task, user: user, title: nil)
@@ -191,11 +191,11 @@ RSpec.describe Task, type: :model do
     it 'returns consistent color for custom categories' do
       task = create(:task, user: user, category: 'custom_category')
       color1 = task.category_color
-      
+
       # Create another task with the same category
       task2 = create(:task, user: user, category: 'custom_category')
       color2 = task2.category_color
-      
+
       expect(color1).to eq(color2)
       expect(color1).to match(/#[0-9a-f]{6}/)  # Valid hex color
     end
@@ -264,7 +264,7 @@ RSpec.describe Task, type: :model do
         create(:task, user: user, category: 'trabajo')  # duplicate
         create(:task, user: user, category: nil)  # should be excluded
         create(:task, user: user, category: '')   # should be excluded
-        
+
         categories = Task.all_categories_for_user(user)
         expect(categories).to contain_exactly('personal', 'trabajo')
       end
@@ -273,16 +273,16 @@ RSpec.describe Task, type: :model do
         create(:task, user: user, category: 'zzz')
         create(:task, user: user, category: 'aaa')
         create(:task, user: user, category: 'mmm')
-        
+
         categories = Task.all_categories_for_user(user)
-        expect(categories).to eq(['aaa', 'mmm', 'zzz'])
+        expect(categories).to eq([ 'aaa', 'mmm', 'zzz' ])
       end
 
       it 'only returns categories for the specified user' do
         other_user = create(:user)
         create(:task, user: user, category: 'user1_category')
         create(:task, user: other_user, category: 'user2_category')
-        
+
         categories = Task.all_categories_for_user(user)
         expect(categories).to contain_exactly('user1_category')
       end
@@ -429,7 +429,7 @@ RSpec.describe Task, type: :model do
     let(:task_maker) { create(:user, role: 'task_maker') }
     let(:task_doer) { create(:user, role: 'task_doer') }
     let(:other_task_maker) { create(:user, role: 'task_maker') }
-    
+
     let(:task_by_maker) { create(:task, user: task_maker) }
     let(:task_assigned_to_doer) { create(:task, user: task_maker, assignee: task_doer) }
     let(:unassigned_task) { create(:task, user: task_maker, assignee: nil) }
@@ -588,4 +588,4 @@ RSpec.describe Task, type: :model do
       end
     end
   end
-end 
+end

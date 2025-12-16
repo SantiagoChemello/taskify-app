@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy]
+  before_action :set_user, only: [ :show, :edit, :update, :destroy ]
 
   def index
     authorize User
@@ -51,17 +51,17 @@ class UsersController < ApplicationController
   def set_user
     @user = User.find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    redirect_to users_path, alert: 'Usuario no encontrado.'
+    redirect_to users_path, alert: "Usuario no encontrado."
   end
 
   def user_params
-    permitted_params = [:name, :email, :password, :password_confirmation]
-    
+    permitted_params = [ :name, :email, :password, :password_confirmation ]
+
     # Only admins can change roles
     if current_user&.admin?
       permitted_params << :role
     end
-    
+
     params.require(:user).permit(permitted_params)
   end
 end

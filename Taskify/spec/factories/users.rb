@@ -18,4 +18,4 @@ FactoryBot.define do
       role { 'task_doer' }
     end
   end
-end 
+end

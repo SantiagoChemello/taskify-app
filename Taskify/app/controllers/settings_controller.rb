@@ -7,19 +7,19 @@ class SettingsController < ApplicationController
 
   def update_profile
     @user = current_user
-    
+
     if @user.update(profile_params)
-      redirect_to settings_path, notice: 'Perfil actualizado exitosamente.'
+      redirect_to settings_path, notice: "Perfil actualizado exitosamente."
     else
-      redirect_to settings_path, alert: 'Error al actualizar el perfil.'
+      redirect_to settings_path, alert: "Error al actualizar el perfil."
     end
   end
 
   def update_preferences
     @user = current_user
-    
+
     if @user.update(preferences_params)
-      redirect_to settings_path, notice: 'Preferencias actualizadas exitosamente.'
+      redirect_to settings_path, notice: "Preferencias actualizadas exitosamente."
     else
       render :index, status: :unprocessable_entity
     end
@@ -36,4 +36,4 @@ class SettingsController < ApplicationController
     # You can extend this later with actual preference fields
     params.require(:user).permit()
   end
-end 
+end

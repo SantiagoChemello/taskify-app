@@ -3,7 +3,7 @@ module TimeFormattable
 
   def time_ago_in_words_es(time_reference = created_at)
     time_diff = Time.current - time_reference
-    
+
     case time_diff
     when 0..59
       seconds = time_diff.to_i
@@ -26,4 +26,4 @@ module TimeFormattable
     # Cache the relative time calculation
     @created_at_relative_es ||= time_ago_in_words_es(created_at)
   end
-end 
+end

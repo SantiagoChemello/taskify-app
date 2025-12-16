@@ -23,4 +23,4 @@ FactoryBot.define do
       due_date { 3.days.from_now }
     end
   end
-end 
+end

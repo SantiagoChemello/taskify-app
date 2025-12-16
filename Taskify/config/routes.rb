@@ -1,15 +1,15 @@
 Rails.application.routes.draw do
   devise_for :users
-  
+
   # Component previews (development only)
   if Rails.env.development? && defined?(Lookbook)
     mount Lookbook::Engine, at: "/lookbook"
   end
-  
+
   # Dashboard route
-  get 'dashboard', to: 'dashboard#index'
-  
-  resources :tasks, only: [:index, :new, :create, :edit, :update, :destroy, :show] do
+  get "dashboard", to: "dashboard#index"
+
+  resources :tasks, only: [ :index, :new, :create, :edit, :update, :destroy, :show ] do
     member do
       patch :complete
       patch :assign
@@ -19,13 +19,13 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :statistics, only: [:index]
-  
+  resources :statistics, only: [ :index ]
+
   # User management (admin only)
   resources :users
-  
+
   # Settings routes
-  resources :settings, only: [:index, :update] do
+  resources :settings, only: [ :index, :update ] do
     collection do
       patch :update_profile
       patch :update_preferences
@@ -45,8 +45,8 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # Redirect authenticated users to dashboard, others to landing page
   authenticated :user do
-    root 'dashboard#index', as: :authenticated_root
+    root "dashboard#index", as: :authenticated_root
   end
-  
+
   root "home#index"
 end

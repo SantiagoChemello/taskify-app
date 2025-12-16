@@ -39,7 +39,7 @@ RSpec.describe "User Registration", type: :request do
 
     it "defaults to task_doer when no role specified" do
       user_params[:user].delete(:role)
-      
+
       expect {
         post user_registration_path, params: user_params
       }.to change(User, :count).by(1)
@@ -51,7 +51,7 @@ RSpec.describe "User Registration", type: :request do
     it "can create admin users" do
       user_params[:user][:role] = "admin"
       user_params[:user][:email] = "admin@example.com"
-      
+
       expect {
         post user_registration_path, params: user_params
       }.to change(User, :count).by(1)
@@ -63,7 +63,7 @@ RSpec.describe "User Registration", type: :request do
     it "can create task_doer users" do
       user_params[:user][:role] = "task_doer"
       user_params[:user][:email] = "doer@example.com"
-      
+
       expect {
         post user_registration_path, params: user_params
       }.to change(User, :count).by(1)
@@ -72,4 +72,4 @@ RSpec.describe "User Registration", type: :request do
       expect(user.role).to eq("task_doer")
     end
   end
-end 
+end

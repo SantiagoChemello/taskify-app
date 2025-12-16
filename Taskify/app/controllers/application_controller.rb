@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
 
   before_action :authenticate_user!
   before_action :configure_permitted_parameters, if: :devise_controller?
-  
+
 
   protected
 
@@ -19,8 +19,8 @@ class ApplicationController < ActionController::Base
   helper_method :can_assign_task?
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :role])
-    devise_parameter_sanitizer.permit(:account_update, keys: [:name])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [ :name, :role ])
+    devise_parameter_sanitizer.permit(:account_update, keys: [ :name ])
   end
 
   # Redirect users to dashboard (Inicio) page after successful login
@@ -40,7 +40,7 @@ class ApplicationController < ActionController::Base
     is_a?(Devise::PasswordsController) ||
     is_a?(Devise::ConfirmationsController) ||
     is_a?(Devise::UnlocksController) ||
-    self.class.name.include?('Devise') ||
+    self.class.name.include?("Devise") ||
     defined?(super) && super
   end
 
@@ -54,15 +54,15 @@ class ApplicationController < ActionController::Base
 
   # Rescue Pundit authorization failures
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-  
+
 
 
   # Only verify Pundit for our main application controllers
   def should_verify_pundit?
     !devise_controller? &&
-    !controller_name.include?('devise') &&
-    !self.class.name.include?('Devise') &&
-    controller_name.in?(['tasks', 'users']) &&
+    !controller_name.include?("devise") &&
+    !self.class.name.include?("Devise") &&
+    controller_name.in?([ "tasks", "users" ]) &&
     user_signed_in?
   end
 end

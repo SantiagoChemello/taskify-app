@@ -11,11 +11,11 @@ class TaskCardComponent < ApplicationComponent
 
   def priority_indicator_class
     case task.priority
-    when 'high'
+    when "high"
       "w-3 h-3 bg-red-500 dark:bg-red-400 rounded-full animate-pulse"
-    when 'medium'
+    when "medium"
       "w-3 h-3 bg-yellow-500 dark:bg-yellow-400 rounded-full"
-    when 'low'
+    when "low"
       "w-3 h-3 bg-green-500 dark:bg-green-400 rounded-full"
     else
       "w-3 h-3 bg-neutral-300 dark:bg-neutral-600 rounded-full"
@@ -56,7 +56,7 @@ class TaskCardComponent < ApplicationComponent
 
   def card_classes
     base_classes = "group bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 hover:shadow-lg dark:hover:shadow-neutral-900/25 transition-all duration-200 hover:border-neutral-300 dark:hover:border-neutral-600"
-    
+
     if task.completed?
       "#{base_classes} opacity-75"
     else
@@ -71,4 +71,4 @@ class TaskCardComponent < ApplicationComponent
   def can_complete_task?
     TaskPolicy.new(current_user, task).complete?
   end
-end 
+end

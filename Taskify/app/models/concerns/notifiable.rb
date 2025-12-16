@@ -4,7 +4,7 @@ module Notifiable
   included do
     has_many :notifications, as: :notifiable, dependent: :destroy
     has_many :user_notifications, through: :notifications
-    
+
     # Callbacks para notificaciones automáticas
     after_create :send_creation_notification
     after_update :send_update_notification, if: :should_notify_on_update?
@@ -13,20 +13,20 @@ module Notifiable
 
   # Tipos de notificaciones
   NOTIFICATION_TYPES = {
-    task_assigned: 'task_assigned',
-    task_completed: 'task_completed', 
-    task_overdue: 'task_overdue',
-    task_due_soon: 'task_due_soon',
-    task_updated: 'task_updated',
-    task_deleted: 'task_deleted',
-    deadline_reminder: 'deadline_reminder',
-    weekly_summary: 'weekly_summary'
+    task_assigned: "task_assigned",
+    task_completed: "task_completed",
+    task_overdue: "task_overdue",
+    task_due_soon: "task_due_soon",
+    task_updated: "task_updated",
+    task_deleted: "task_deleted",
+    deadline_reminder: "deadline_reminder",
+    weekly_summary: "weekly_summary"
   }.freeze
 
   def notify_users(users, notification_type, message: nil, data: {})
     Array(users).each do |user|
       next unless user.should_receive_notification?(notification_type)
-      
+
       create_notification_for_user(
         user: user,
         notification_type: notification_type,
@@ -38,9 +38,9 @@ module Notifiable
 
   def notify_assignee(notification_type, custom_message: nil)
     return unless assignee.present?
-    
+
     notify_users(
-      assignee, 
+      assignee,
       notification_type,
       message: custom_message,
       data: { task_id: id, task_title: title }
@@ -49,17 +49,17 @@ module Notifiable
 
   def notify_creator(notification_type, custom_message: nil)
     return unless user.present?
-    
+
     notify_users(
       user,
-      notification_type, 
+      notification_type,
       message: custom_message,
       data: { task_id: id, task_title: title }
     )
   end
 
   def broadcast_to_team(notification_type, custom_message: nil)
-    team_users = [user, assignee].compact.uniq
+    team_users = [ user, assignee ].compact.uniq
     notify_users(team_users, notification_type, message: custom_message)
   end
 
@@ -67,7 +67,7 @@ module Notifiable
 
   def send_creation_notification
     if assignee.present?
-      notify_assignee(:task_assigned, 
+      notify_assignee(:task_assigned,
         custom_message: "Se te ha asignado la tarea: #{title}")
     end
   end
@@ -81,7 +81,7 @@ module Notifiable
         custom_message: "Se te ha asignado una tarea actualizada: #{title}")
     end
 
-    if changes_to_notify.include?('due_date') && assignee.present?
+    if changes_to_notify.include?("due_date") && assignee.present?
       notify_assignee(:task_updated,
         custom_message: "La fecha límite de tu tarea '#{title}' ha cambiado")
     end
@@ -139,10 +139,10 @@ module Notifiable
 
     # Enviar notificación en tiempo real
     broadcast_notification(notification) if user.real_time_notifications?
-    
+
     # Enviar email si está habilitado
     send_email_notification(notification) if user.email_notifications?
-    
+
     notification
   end
 
@@ -162,4 +162,4 @@ module Notifiable
   def send_email_notification(notification)
     NotificationMailer.task_notification(notification).deliver_later
   end
-end 
+end
